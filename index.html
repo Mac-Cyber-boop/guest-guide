@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zero Day Briefing</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Markdown Parser -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -210,54 +211,43 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-    // --- Contentful API Configuration ---
-    const SPACE_ID = 'et5ppfnhqqil';
-    const ACCESS_TOKEN = 'g6vGXr5inxNgi0qrzuT9K6wMlFSQoA78ZBuVq2EYVnM';
-    const CONTENT_TYPE_ID = 'cyberPunkNews'; 
-
     let blogPosts = [];
 
-    // --- Helper function to render Rich Text from Contentful ---
-    function renderRichText(richText) {
-        let html = '';
-        if (richText && richText.content) {
-            richText.content.forEach(node => {
-                if (node.nodeType === 'paragraph') {
-                    let paragraphText = '';
-                    node.content.forEach(innerNode => {
-                        if (innerNode.nodeType === 'text') {
-                            paragraphText += innerNode.value;
-                        }
-                    });
-                    html += `<p>${paragraphText}</p>`;
-                }
-            });
-        }
-        return html;
-    }
-
-    // --- Fetch Blog Posts from Contentful ---
+    // --- Fetch Blog Posts from GitHub ---
     async function fetchBlogPosts() {
-        const url = `https://cdn.contentful.com/spaces/${SPACE_ID}/environments/master/entries?access_token=${ACCESS_TOKEN}&content_type=${CONTENT_TYPE_ID}`;
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
-            const data = await response.json();
-            
-            const formattedPosts = data.items.map(item => ({
-                id: item.sys.id,
-                category: item.fields.category || 'news',
-                title: item.fields.title || 'No Title',
-                date: new Date(item.fields.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-                excerpt: item.fields.excerpt || '',
-                content: renderRichText(item.fields.content)
+            // This file will list all your markdown post files. You must create it.
+            const response = await fetch('_posts/posts.json');
+            if (!response.ok) throw new Error('posts.json not found.');
+            const postFiles = await response.json();
+
+            const posts = await Promise.all(postFiles.map(async file => {
+                const postResponse = await fetch(`_posts/${file}`);
+                const markdown = await postResponse.text();
+                
+                // Simple front matter parser
+                const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
+                const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
+                const content = markdown.replace(/---[\s\S]*?---/, '').trim();
+
+                const postData = {};
+                frontMatterText.split('\n').forEach(line => {
+                    const parts = line.split(':');
+                    if (parts.length > 1) {
+                        const key = parts[0].trim();
+                        const value = parts.slice(1).join(':').trim();
+                        postData[key] = value;
+                    }
+                });
+                
+                postData.content = marked.parse(content);
+                postData.id = file; // Use filename as ID
+                return postData;
             }));
-            return formattedPosts;
+            return posts;
         } catch (error) {
             console.error("Failed to fetch blog posts:", error);
-            postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Check API keys and Content Type ID.</p>`;
+            postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Make sure you have a '_posts' folder with a 'posts.json' file listing your markdown files.</p>`;
             return [];
         }
     }
@@ -265,8 +255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // DOM Elements
     const postsContainer = document.getElementById('blog-posts-container');
     const filterContainer = document.getElementById('filter-container');
-    const navLinks = document.querySelectorAll('.nav-link:not([href^="#"])'); // Select only external page links
-    const filterNavLinks = document.querySelectorAll('a.nav-link[href^="#"]'); // Select only filter links
+    const navLinks = document.querySelectorAll('.nav-link');
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -302,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             postElement.innerHTML = `
                 <div>
                     <div class="flex justify-between items-center mb-3">
-                        <p class="font-mono text-sm text-gray-500">${post.date}</p>
+                        <p class="font-mono text-sm text-gray-500">${new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                         <span class="font-mono text-xs py-1 px-2 rounded-full ${colorClasses}">${post.category.replace('-', ' ')}</span>
                     </div>
                     <h3 class="text-2xl font-bold text-white mb-4">${post.title}</h3>
@@ -327,20 +316,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     filterContainer.addEventListener('click', (e) => {
-        if (e.target.tagName === 'BUTTON') {
-            applyFilter(e.target.dataset.filter);
+        if (e.target.closest('button')) {
+            applyFilter(e.target.closest('button').dataset.filter);
         }
-    });
-
-    filterNavLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const filter = e.target.dataset.filter;
-            const targetId = e.target.getAttribute('href');
-            document.querySelector(targetId)?.scrollIntoView({ behavior: 'smooth' });
-            applyFilter(filter);
-            if (!mobileMenu.classList.contains('hidden')) toggleMobileMenu();
-        });
     });
 
     const toggleMobileMenu = () => mobileMenu.classList.toggle('hidden');
@@ -401,13 +379,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const modal = document.getElementById('modal'), modalTitle = document.getElementById('modal-title'), modalDate = document.getElementById('modal-date'), modalContent = document.getElementById('modal-content'), closeModalBtn = document.getElementById('close-modal');
     const openModal = (post) => {
-        modalTitle.textContent = post.title; modalDate.textContent = post.date; modalContent.innerHTML = post.content;
+        modalTitle.textContent = post.title;
+        modalDate.textContent = new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        modalContent.innerHTML = post.content;
         modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
     };
     const hideModal = () => { modal.classList.add('hidden'); document.body.style.overflow = ''; };
     postsContainer.addEventListener('click', (e) => {
-        if (e.target.classList.contains('read-more-btn')) {
-            const postId = e.target.dataset.postId;
+        const readMoreButton = e.target.closest('.read-more-btn');
+        if (readMoreButton) {
+            const postId = readMoreButton.dataset.postId;
             const post = blogPosts.find(p => p.id === postId);
             if (post) openModal(post);
         }
