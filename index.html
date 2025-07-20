@@ -9,9 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0a0a0a;
@@ -37,7 +35,6 @@
             62% { transform: translate(0, 0) skew(5deg); }
         }
         .glitch { animation: glitch 1s linear infinite; }
-
         .scroll-animate { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
         .scroll-animate.visible { opacity: 1; transform: translateY(0); }
         #cursor-orb {
@@ -54,72 +51,27 @@
         }
         .filter-btn.active { background-color: #ff00ff; color: white; border-color: #ff00ff; }
         #search-input::placeholder { color: #555; }
-
-        /* Scanline Overlay */
         .scanline-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10000;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000;
             background: linear-gradient(to bottom, rgba(22, 22, 22, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-            background-size: 100% 4px;
-            animation: scanline 10s linear infinite;
+            background-size: 100% 4px; animation: scanline 10s linear infinite;
         }
-        @keyframes scanline {
-            from { background-position: 0 0; }
-            to { background-position: 0 100%; }
-        }
-
-        /* Terminal Animation */
+        @keyframes scanline { from { background-position: 0 0; } to { background-position: 0 100%; } }
         #terminal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            color: #0f0;
-            text-shadow: 0 0 5px #0f0;
-            font-family: 'Roboto Mono', monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            opacity: 0.2; /* Increased opacity */
-            z-index: -1;
-            overflow: hidden;
-            font-size: 12px;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: #0f0; text-shadow: 0 0 5px #0f0;
+            font-family: 'Roboto Mono', monospace; white-space: pre-wrap; word-wrap: break-word; opacity: 0.2;
+            z-index: -1; overflow: hidden; font-size: 12px;
         }
-        #terminal-content::after {
-            content: '█';
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-        
-        /* Matrix Rain Effect */
+        #terminal-content::after { content: '█'; animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
         .matrix-rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -2; /* Behind everything */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -2;
         }
         .matrix-rain span {
-            position: absolute;
-            color: #0f0;
-            font-family: 'Roboto Mono', monospace;
-            font-size: 16px;
-            opacity: 0.6;
+            position: absolute; color: #0f0; font-family: 'Roboto Mono', monospace; font-size: 16px; opacity: 0.6;
             animation: rain 5s linear infinite;
         }
-        @keyframes rain {
-            0% { transform: translateY(-100vh); opacity: 0.6; }
-            100% { transform: translateY(100vh); opacity: 0.2; }
-        }
+        @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
     </style>
 </head>
 <body class="bg-[#0a0a0a] relative noise">
@@ -132,12 +84,12 @@
     <header class="fixed top-0 left-0 right-0 bg-[#0a0a0a] bg-opacity-80 backdrop-blur-sm z-40 border-b border-gray-800">
         <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <div class="hidden md:flex items-baseline space-x-6">
-                 <a href="#latest-briefings" data-filter="zero-day" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Zero-Day Briefing</a>
-                <a href="#latest-briefings" data-filter="hot-attacks" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Hot Attacks</a>
-                <a href="#latest-briefings" data-filter="tools" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Hacking Tools</a>
-                <a href="#latest-briefings" data-filter="tricks" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Tricks & Tips</a>
+                 <a href="index.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Briefings</a>
+                <a href="about.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">About</a>
+                <a href="services.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Services</a>
+                <a href="contact.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Contact</a>
             </div>
-            <a href="#" data-filter="all" class="md:hidden nav-link text-lg font-bold font-mono neon-text glitch">Zero-Day Briefing</a>
+            <a href="index.html" class="md:hidden nav-link text-lg font-bold font-mono neon-text glitch">Zero-Day Briefing</a>
             
             <div class="flex items-center space-x-4">
                 <button id="search-button" class="text-white hover:text-fuchsia-400 transition-colors">
@@ -159,10 +111,10 @@
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
         <nav class="flex flex-col items-center space-y-8">
-            <a href="#latest-briefings" data-filter="zero-day" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Zero-Day Briefing</a>
-            <a href="#latest-briefings" data-filter="hot-attacks" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Hot Attacks</a>
-            <a href="#latest-briefings" data-filter="tools" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Hacking Tools</a>
-            <a href="#latest-briefings" data-filter="tricks" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Tricks & Tips</a>
+            <a href="index.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Briefings</a>
+            <a href="about.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">About</a>
+            <a href="services.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Services</a>
+            <a href="contact.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Contact</a>
             <button class="mt-8 bg-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-fuchsia-500 transition-colors">Subscribe</button>
         </nav>
     </div>
