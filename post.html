@@ -58,6 +58,9 @@
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
         
+        .post-content {
+            overflow-wrap: break-word;
+        }
         .post-content h3, .post-content h4 {
             font-size: 1.5rem;
             font-weight: 700;
@@ -95,6 +98,7 @@
         <!-- Post Content Section -->
         <div class="container mx-auto px-4 sm:px-6 pt-32 pb-16">
             <div id="post-container" class="max-w-3xl mx-auto">
+                <!-- Post content will be injected here by JavaScript -->
                 <p class="text-center text-gray-500">Loading briefing...</p>
             </div>
         </div>
@@ -102,27 +106,33 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-    const GITHUB_OWNER = 'mac-cyber-boop';
-    const GITHUB_REPO = 'guest-guide';
+    // --- GitHub API Configuration ---
+    const GITHUB_CONFIG = {
+        OWNER: 'mac-cyber-boop',
+        REPO: 'guest-guide'
+    };
+
     const postContainer = document.getElementById('post-container');
 
+    // --- Fetch and Display a Single Post ---
     async function fetchPost() {
         try {
             const params = new URLSearchParams(window.location.search);
-            const postFile = params.get('post');
+            let postFile = params.get('post');
 
             if (!postFile) {
                 postContainer.innerHTML = `<p class="text-yellow-400 text-center">No post specified. Select a briefing from the <a href='index.html' class='underline'>home page</a>.</p>`;
                 return;
             }
 
-            const postUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/main/_posts/${postFile}`;
+            const postUrl = `https://raw.githubusercontent.com/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/main/_posts/${postFile}`;
             
             const postResponse = await fetch(postUrl);
             if (!postResponse.ok) throw new Error(`Could not fetch post file: ${postFile}`);
             
             const markdown = await postResponse.text();
             
+            // Simple front matter parser
             const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
             const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
             const content = markdown.replace(/---[\s\S]*?---/, '').trim();
@@ -140,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             postData.content = marked.parse(content);
             document.title = `${postData.title} - Zero Day Briefing`;
 
+            // Render the post
             postContainer.innerHTML = `
                 <h1 class="text-4xl sm:text-5xl font-black uppercase tracking-wider leading-tight neon-text">${postData.title}</h1>
                 <p class="mt-4 text-gray-500 font-mono">${new Date(postData.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
@@ -157,6 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Matrix Rain Logic
     const matrixRainContainer = document.getElementById('matrix-rain');
     function createRainDrop() {
         const drop = document.createElement('span');
@@ -168,6 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     setInterval(createRainDrop, 100);
 
+    // Cursor Orb Logic
     const orb = document.getElementById('cursor-orb');
     if (window.matchMedia('(pointer: fine)').matches) {
         document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
