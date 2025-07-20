@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zero Day Briefing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -218,270 +218,272 @@
             </div>
         </div>
     </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-    let blogPosts = [];
     
-    // --- GitHub API Configuration ---
-    const GITHUB_OWNER = 'mac-cyber-boop';
-    const GITHUB_REPO = 'guest-guide';
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        let blogPosts = [];
+        
+        // --- GitHub API Configuration ---
+        const GITHUB_CONFIG = {
+            OWNER: 'mac-cyber-boop',
+            REPO: 'guest-guide'
+        };
 
-    // --- Fetch Blog Posts from GitHub ---
-    async function fetchBlogPosts() {
-        const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/_posts`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Could not fetch posts from GitHub: ${response.statusText}`);
-            const files = await response.json();
+        // --- Fetch Blog Posts from GitHub ---
+        async function fetchBlogPosts() {
+            const url = `https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/_posts`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Could not fetch posts from GitHub: ${response.statusText}`);
+                const files = await response.json();
 
-            const postFiles = files.filter(file => file.name.endsWith('.md'));
+                const postFiles = files.filter(file => file.name.endsWith('.md'));
 
-            const posts = await Promise.all(postFiles.map(async file => {
-                const postResponse = await fetch(file.download_url);
-                const markdown = await postResponse.text();
-                
-                const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
-                const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
-                const content = markdown.replace(/---[\s\S]*?---/, '').trim();
+                const posts = await Promise.all(postFiles.map(async file => {
+                    const postResponse = await fetch(file.download_url);
+                    const markdown = await postResponse.text();
+                    
+                    const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
+                    const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
+                    const content = markdown.replace(/---[\s\S]*?---/, '').trim();
 
-                const postData = {};
-                frontMatterText.split('\n').forEach(line => {
-                    const parts = line.split(':');
-                    if (parts.length > 1) {
-                        const key = parts[0].trim();
-                        const value = parts.slice(1).join(':').trim().replace(/^"(.*)"$/, '$1');
-                        postData[key] = value;
-                    }
-                });
-                
-                postData.content = marked.parse(content);
-                postData.id = file.sha;
-                postData.filename = file.name;
-                return postData;
-            }));
-            posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-            return posts;
-        } catch (error) {
-            console.error("Failed to fetch blog posts:", error);
-            postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Check GitHub repo details and ensure the '_posts' folder exists.</p>`;
-            return [];
-        }
-    }
-
-    // DOM Elements
-    const postsContainer = document.getElementById('blog-posts-container');
-    const filterContainer = document.getElementById('filter-container');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const searchButton = document.getElementById('search-button');
-    const searchOverlay = document.getElementById('search-overlay');
-    const searchCloseButton = document.getElementById('search-close-button');
-    const searchInput = document.getElementById('search-input');
-    const feedTitle = document.getElementById('feed-title');
-    const feedSubtitle = document.getElementById('feed-subtitle');
-    const terminalContent = document.getElementById('terminal-content');
-    const matrixRainContainer = document.getElementById('matrix-rain');
-    const subscribeButton = document.getElementById('subscribe-button');
-    const mobileSubscribeButton = document.getElementById('mobile-subscribe-button');
-    const subscribeModal = document.getElementById('subscribe-modal');
-    const subscribeCloseButton = document.getElementById('subscribe-close-button');
-
-    let currentFilter = 'all';
-
-    const categoryColors = {
-        'zero-day': 'bg-red-500/20 text-red-300 border-red-500/30',
-        'hot-attacks': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-        'tools': 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-        'tricks': 'bg-green-500/20 text-green-300 border-green-500/30'
-    };
-
-    const renderPosts = (postsToRender) => {
-        postsContainer.innerHTML = '';
-        if (postsToRender.length === 0) {
-            postsContainer.innerHTML = `<p class="text-gray-500 text-center col-span-full">No briefings found.</p>`;
-            return;
-        }
-
-        postsToRender.forEach(post => {
-            const postElement = document.createElement('div');
-            postElement.className = 'scroll-animate bg-black bg-opacity-30 p-6 rounded-xl border border-gray-800 hover:border-fuchsia-500 transition-all duration-300 flex flex-col';
-            const colorClasses = categoryColors[post.category] || 'bg-gray-500/20 text-gray-300';
-            
-            const readMoreLink = post.category === 'zero-day' 
-                ? `<button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>`
-                : `<a href="post.html?post=${post.filename}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</a>`;
-
-            postElement.innerHTML = `
-                <div>
-                    <div class="flex justify-between items-center mb-3">
-                        <p class="font-mono text-sm text-gray-500">${new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
-                        <span class="font-mono text-xs py-1 px-2 rounded-full ${colorClasses}">${post.category.replace('-', ' ')}</span>
-                    </div>
-                    <h3 class="text-2xl font-bold text-white mb-4">${post.title}</h3>
-                    <p class="text-gray-400 flex-grow">${post.excerpt}</p>
-                </div>
-                ${readMoreLink}
-            `;
-            postsContainer.appendChild(postElement);
-        });
-        document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
-    };
-    
-    const applyFilter = (filter) => {
-        currentFilter = filter;
-        document.querySelector('.filter-btn.active').classList.remove('active');
-        document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
-        const postsToRender = filter === 'all' ? blogPosts : blogPosts.filter(p => p.category === filter);
-        renderPosts(postsToRender);
-        feedTitle.textContent = "Intelligence Feed";
-        feedSubtitle.textContent = "Select a category to filter the reports.";
-        filterContainer.classList.remove('hidden');
-    };
-
-    filterContainer.addEventListener('click', (e) => {
-        if (e.target.closest('button')) {
-            applyFilter(e.target.closest('button').dataset.filter);
-        }
-    });
-
-    const toggleMobileMenu = () => mobileMenu.classList.toggle('hidden');
-    mobileMenuButton.addEventListener('click', toggleMobileMenu);
-    mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
-
-    // Search Logic
-    const openSearch = () => {
-        searchOverlay.classList.remove('hidden');
-        searchInput.focus();
-    };
-    const closeSearch = () => {
-        searchOverlay.classList.add('hidden');
-        searchInput.value = '';
-        applyFilter(currentFilter);
-    };
-
-    searchButton.addEventListener('click', openSearch);
-    searchCloseButton.addEventListener('click', closeSearch);
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && !searchOverlay.classList.contains('hidden')) {
-            closeSearch();
-        }
-    });
-
-    searchInput.addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        if (searchTerm.length > 0) {
-            const searchResults = blogPosts.filter(post => 
-                post.title.toLowerCase().includes(searchTerm) || 
-                post.excerpt.toLowerCase().includes(searchTerm)
-            );
-            renderPosts(searchResults);
-            feedTitle.textContent = `Search Results for "${searchTerm}"`;
-            feedSubtitle.textContent = `${searchResults.length} briefings found.`;
-            filterContainer.classList.add('hidden');
-        } else {
-            applyFilter(currentFilter);
-        }
-    });
-
-    // Subscribe Modal Logic
-    const openSubscribeModal = () => subscribeModal.classList.remove('hidden');
-    const closeSubscribeModal = () => subscribeModal.classList.add('hidden');
-    subscribeButton.addEventListener('click', openSubscribeModal);
-    mobileSubscribeButton.addEventListener('click', openSubscribeModal);
-    subscribeCloseButton.addEventListener('click', closeSubscribeModal);
-
-
-    const orb = document.getElementById('cursor-orb');
-    if (window.matchMedia('(pointer: fine)').matches) {
-        document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
-        document.addEventListener('mousedown', () => { orb.style.transform = 'translate(-50%, -50%) scale(1.5)'; orb.style.background = 'rgba(255, 0, 255, 0.5)'; });
-        document.addEventListener('mouseup', () => { orb.style.transform = 'translate(-50%, -50%) scale(1)'; orb.style.background = 'rgba(0, 191, 255, 0.5)'; });
-    } else {
-        orb.style.display = 'none';
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-    }, { threshold: 0.1 });
-
-    const modal = document.getElementById('modal'), modalTitle = document.getElementById('modal-title'), modalDate = document.getElementById('modal-date'), modalContent = document.getElementById('modal-content'), closeModalBtn = document.getElementById('close-modal');
-    const openModal = (post) => {
-        modalTitle.textContent = post.title;
-        modalDate.textContent = new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        modalContent.innerHTML = post.content;
-        modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
-    };
-    const hideModal = () => { modal.classList.add('hidden'); document.body.style.overflow = ''; };
-    postsContainer.addEventListener('click', (e) => {
-        const readMoreButton = e.target.closest('.read-more-btn');
-        if (readMoreButton && readMoreButton.tagName === 'BUTTON') {
-            const postId = readMoreButton.dataset.postId;
-            const post = blogPosts.find(p => p.id === postId);
-            if (post) openModal(post);
-        }
-    });
-    closeModalBtn.addEventListener('click', hideModal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
-    
-    // Terminal Animation Logic
-    const terminalLines = [
-        'Booting ZDB Mainframe...',
-        'Connecting to global threat network...',
-        'SYN... ACK...',
-        'Connection established.',
-        'Loading latest intelligence briefings...',
-        'Welcome, operative.'
-    ];
-    let lineIndex = 0;
-    let charIndex = 0;
-    
-    function typeTerminal() {
-        if (lineIndex < terminalLines.length) {
-            if (charIndex < terminalLines[lineIndex].length) {
-                terminalContent.innerHTML += terminalLines[lineIndex].charAt(charIndex);
-                charIndex++;
-                setTimeout(typeTerminal, Math.random() * 100 + 20);
-            } else {
-                terminalContent.innerHTML += '\n';
-                lineIndex++;
-                charIndex = 0;
-                setTimeout(typeTerminal, 500);
+                    const postData = {};
+                    frontMatterText.split('\n').forEach(line => {
+                        const parts = line.split(':');
+                        if (parts.length > 1) {
+                            const key = parts[0].trim();
+                            const value = parts.slice(1).join(':').trim().replace(/^"(.*)"$/, '$1');
+                            postData[key] = value;
+                        }
+                    });
+                    
+                    postData.content = marked.parse(content);
+                    postData.id = file.sha;
+                    postData.filename = file.name;
+                    return postData;
+                }));
+                posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                return posts;
+            } catch (error) {
+                console.error("Failed to fetch blog posts:", error);
+                postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Check GitHub repo details and ensure the '_posts' folder exists.</p>`;
+                return [];
             }
-        } else {
-            setTimeout(() => {
-                terminalContent.innerHTML = '';
-                lineIndex = 0;
-                charIndex = 0;
-                typeTerminal();
-            }, 5000);
         }
-    }
-    
-    // Matrix Rain Logic
-    function createRainDrop() {
-        const drop = document.createElement('span');
-        drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96); // Katakana characters
-        drop.style.left = Math.random() * 100 + 'vw';
-        drop.style.animationDuration = Math.random() * 3 + 3 + 's';
-        matrixRainContainer.appendChild(drop);
-        setTimeout(() => drop.remove(), 6000);
-    }
-    setInterval(createRainDrop, 100);
 
-    // Initial render
-    async function init() {
-        blogPosts = await fetchBlogPosts();
-        applyFilter('all');
-        typeTerminal();
-    }
+        // DOM Elements
+        const postsContainer = document.getElementById('blog-posts-container');
+        const filterContainer = document.getElementById('filter-container');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const searchButton = document.getElementById('search-button');
+        const searchOverlay = document.getElementById('search-overlay');
+        const searchCloseButton = document.getElementById('search-close-button');
+        const searchInput = document.getElementById('search-input');
+        const feedTitle = document.getElementById('feed-title');
+        const feedSubtitle = document.getElementById('feed-subtitle');
+        const terminalContent = document.getElementById('terminal-content');
+        const matrixRainContainer = document.getElementById('matrix-rain');
+        const subscribeButton = document.getElementById('subscribe-button');
+        const mobileSubscribeButton = document.getElementById('mobile-subscribe-button');
+        const subscribeModal = document.getElementById('subscribe-modal');
+        const subscribeCloseButton = document.getElementById('subscribe-close-button');
 
-    init();
-});
-</script>
+        let currentFilter = 'all';
+
+        const categoryColors = {
+            'zero-day': 'bg-red-500/20 text-red-300 border-red-500/30',
+            'hot-attacks': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
+            'tools': 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+            'tricks': 'bg-green-500/20 text-green-300 border-green-500/30'
+        };
+
+        const renderPosts = (postsToRender) => {
+            postsContainer.innerHTML = '';
+            if (postsToRender.length === 0) {
+                postsContainer.innerHTML = `<p class="text-gray-500 text-center col-span-full">No briefings found.</p>`;
+                return;
+            }
+
+            postsToRender.forEach(post => {
+                const postElement = document.createElement('div');
+                postElement.className = 'scroll-animate bg-black bg-opacity-30 p-6 rounded-xl border border-gray-800 hover:border-fuchsia-500 transition-all duration-300 flex flex-col';
+                const colorClasses = categoryColors[post.category] || 'bg-gray-500/20 text-gray-300';
+                
+                const readMoreLink = post.category === 'zero-day' 
+                    ? `<button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>`
+                    : `<a href="post.html?post=${post.filename}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</a>`;
+
+                postElement.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <p class="font-mono text-sm text-gray-500">${new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                            <span class="font-mono text-xs py-1 px-2 rounded-full ${colorClasses}">${post.category.replace('-', ' ')}</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-4">${post.title}</h3>
+                        <p class="text-gray-400 flex-grow">${post.excerpt}</p>
+                    </div>
+                    ${readMoreLink}
+                `;
+                postsContainer.appendChild(postElement);
+            });
+            document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+        };
+        
+        const applyFilter = (filter) => {
+            currentFilter = filter;
+            document.querySelector('.filter-btn.active').classList.remove('active');
+            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
+            const postsToRender = filter === 'all' ? blogPosts : blogPosts.filter(p => p.category === filter);
+            renderPosts(postsToRender);
+            feedTitle.textContent = "Intelligence Feed";
+            feedSubtitle.textContent = "Select a category to filter the reports.";
+            filterContainer.classList.remove('hidden');
+        };
+
+        filterContainer.addEventListener('click', (e) => {
+            if (e.target.closest('button')) {
+                applyFilter(e.target.closest('button').dataset.filter);
+            }
+        });
+
+        const toggleMobileMenu = () => mobileMenu.classList.toggle('hidden');
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
+
+        // Search Logic
+        const openSearch = () => {
+            searchOverlay.classList.remove('hidden');
+            searchInput.focus();
+        };
+        const closeSearch = () => {
+            searchOverlay.classList.add('hidden');
+            searchInput.value = '';
+            applyFilter(currentFilter);
+        };
+
+        searchButton.addEventListener('click', openSearch);
+        searchCloseButton.addEventListener('click', closeSearch);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !searchOverlay.classList.contains('hidden')) {
+                closeSearch();
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            if (searchTerm.length > 0) {
+                const searchResults = blogPosts.filter(post => 
+                    post.title.toLowerCase().includes(searchTerm) || 
+                    post.excerpt.toLowerCase().includes(searchTerm)
+                );
+                renderPosts(searchResults);
+                feedTitle.textContent = `Search Results for "${searchTerm}"`;
+                feedSubtitle.textContent = `${searchResults.length} briefings found.`;
+                filterContainer.classList.add('hidden');
+            } else {
+                applyFilter(currentFilter);
+            }
+        });
+
+        // Subscribe Modal Logic
+        const openSubscribeModal = () => subscribeModal.classList.remove('hidden');
+        const closeSubscribeModal = () => subscribeModal.classList.add('hidden');
+        subscribeButton.addEventListener('click', openSubscribeModal);
+        mobileSubscribeButton.addEventListener('click', openSubscribeModal);
+        subscribeCloseButton.addEventListener('click', closeSubscribeModal);
+
+
+        const orb = document.getElementById('cursor-orb');
+        if (window.matchMedia('(pointer: fine)').matches) {
+            document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
+            document.addEventListener('mousedown', () => { orb.style.transform = 'translate(-50%, -50%) scale(1.5)'; orb.style.background = 'rgba(255, 0, 255, 0.5)'; });
+            document.addEventListener('mouseup', () => { orb.style.transform = 'translate(-50%, -50%) scale(1)'; orb.style.background = 'rgba(0, 191, 255, 0.5)'; });
+        } else {
+            orb.style.display = 'none';
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+
+        const modal = document.getElementById('modal'), modalTitle = document.getElementById('modal-title'), modalDate = document.getElementById('modal-date'), modalContent = document.getElementById('modal-content'), closeModalBtn = document.getElementById('close-modal');
+        const openModal = (post) => {
+            modalTitle.textContent = post.title;
+            modalDate.textContent = new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            modalContent.innerHTML = post.content;
+            modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+        };
+        const hideModal = () => { modal.classList.add('hidden'); document.body.style.overflow = ''; };
+        postsContainer.addEventListener('click', (e) => {
+            const readMoreButton = e.target.closest('.read-more-btn');
+            if (readMoreButton && readMoreButton.tagName === 'BUTTON') {
+                const postId = readMoreButton.dataset.postId;
+                const post = blogPosts.find(p => p.id === postId);
+                if (post) openModal(post);
+            }
+        });
+        closeModalBtn.addEventListener('click', hideModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+        
+        // Terminal Animation Logic
+        const terminalLines = [
+            'Booting ZDB Mainframe...',
+            'Connecting to global threat network...',
+            'SYN... ACK...',
+            'Connection established.',
+            'Loading latest intelligence briefings...',
+            'Welcome, operative.'
+        ];
+        let lineIndex = 0;
+        let charIndex = 0;
+        
+        function typeTerminal() {
+            if (lineIndex < terminalLines.length) {
+                if (charIndex < terminalLines[lineIndex].length) {
+                    terminalContent.innerHTML += terminalLines[lineIndex].charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeTerminal, Math.random() * 100 + 20);
+                } else {
+                    terminalContent.innerHTML += '\n';
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeTerminal, 500);
+                }
+            } else {
+                setTimeout(() => {
+                    terminalContent.innerHTML = '';
+                    lineIndex = 0;
+                    charIndex = 0;
+                    typeTerminal();
+                }, 5000);
+            }
+        }
+        
+        // Matrix Rain Logic
+        function createRainDrop() {
+            const drop = document.createElement('span');
+            drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96); // Katakana characters
+            drop.style.left = Math.random() * 100 + 'vw';
+            drop.style.animationDuration = Math.random() * 3 + 3 + 's';
+            matrixRainContainer.appendChild(drop);
+            setTimeout(() => drop.remove(), 6000);
+        }
+        setInterval(createRainDrop, 100);
+
+        // Initial render
+        async function init() {
+            blogPosts = await fetchBlogPosts();
+            applyFilter('all');
+            typeTerminal();
+        }
+
+        init();
+    });
+    </script>
 
 </body>
 </html>
