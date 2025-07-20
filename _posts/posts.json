@@ -1,0 +1,22 @@
+[
+    "zero-day-phantom-thread.md",
+    "zero-day-iot-protocol.md",
+    "zero-day-exchange-exploit.md",
+    "zero-day-npm-flaw.md",
+    "zero-day-voltbleed.md",
+    "hot-attacks-defi-drainer.md",
+    "hot-attacks-blackrabbit.md",
+    "hot-attacks-vishing.md",
+    "hot-attacks-living-off-cloud.md",
+    "hot-attacks-qr-poisoning.md",
+    "tools-jaeles.md",
+    "tools-bloodhound.md",
+    "tools-ghidra.md",
+    "tools-shodan.md",
+    "tools-c2-frameworks.md",
+    "tricks-doh-evasion.md",
+    "tricks-password-spraying.md",
+    "tricks-s3-buckets.md",
+    "tricks-printnightmare.md",
+    "tricks-osint-phishing.md"
+]
