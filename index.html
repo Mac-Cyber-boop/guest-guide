@@ -101,7 +101,7 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
                     </button>
                 </div>
-                <button class="hidden md:block bg-fuchsia-600 text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-fuchsia-500 transition-colors">Subscribe</button>
+                <button id="subscribe-button" class="hidden md:block bg-fuchsia-600 text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-fuchsia-500 transition-colors">Subscribe</button>
             </div>
         </div>
     </header>
@@ -116,7 +116,7 @@
             <a href="about.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">About</a>
             <a href="services.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Services</a>
             <a href="contact.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Contact</a>
-            <button class="mt-8 bg-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-fuchsia-500 transition-colors">Subscribe</button>
+            <button id="mobile-subscribe-button" class="mt-8 bg-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-fuchsia-500 transition-colors">Subscribe</button>
         </nav>
     </div>
     
@@ -130,6 +130,16 @@
                 <span class="text-green-400 text-xl sm:text-2xl mr-2">$</span>
                 <input type="text" id="search-input" placeholder="Enter command..." class="w-full bg-transparent text-white text-xl sm:text-2xl focus:outline-none">
             </div>
+        </div>
+    </div>
+    
+    <!-- Subscribe Modal -->
+    <div id="subscribe-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center">
+            <button id="subscribe-close-button" class="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold neon-text mb-4">Join the Network</h2>
+            <p class="text-gray-400 mb-6">Subscribe for weekly intelligence briefings.</p>
+            <p class="text-sm text-gray-500">This is a demo. In a real application, this form would integrate with an email service.</p>
         </div>
     </div>
 
@@ -214,27 +224,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     let blogPosts = [];
     
     // --- GitHub API Configuration ---
-    // IMPORTANT: Replace with your GitHub username and repository name
     const GITHUB_OWNER = 'mac-cyber-boop';
     const GITHUB_REPO = 'guest-guide';
 
     // --- Fetch Blog Posts from GitHub ---
     async function fetchBlogPosts() {
-        // This API call gets the contents of the _posts directory
         const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/_posts`;
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Could not fetch posts from GitHub: ${response.statusText}`);
             const files = await response.json();
 
-            // Filter out non-markdown files and the posts.json file itself
             const postFiles = files.filter(file => file.name.endsWith('.md'));
 
             const posts = await Promise.all(postFiles.map(async file => {
                 const postResponse = await fetch(file.download_url);
                 const markdown = await postResponse.text();
                 
-                // Simple front matter parser
                 const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
                 const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
                 const content = markdown.replace(/---[\s\S]*?---/, '').trim();
@@ -244,17 +250,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const parts = line.split(':');
                     if (parts.length > 1) {
                         const key = parts[0].trim();
-                        // Re-join the rest of the line in case the value contains a colon
                         const value = parts.slice(1).join(':').trim().replace(/^"(.*)"$/, '$1');
                         postData[key] = value;
                     }
                 });
                 
                 postData.content = marked.parse(content);
-                postData.id = file.sha; // Use file SHA as a unique ID
+                postData.id = file.sha;
+                postData.filename = file.name; // Store filename for routing
                 return postData;
             }));
-            // Sort posts by date, newest first
             posts.sort((a, b) => new Date(b.date) - new Date(a.date));
             return posts;
         } catch (error) {
@@ -278,6 +283,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const feedSubtitle = document.getElementById('feed-subtitle');
     const terminalContent = document.getElementById('terminal-content');
     const matrixRainContainer = document.getElementById('matrix-rain');
+    const subscribeButton = document.getElementById('subscribe-button');
+    const mobileSubscribeButton = document.getElementById('mobile-subscribe-button');
+    const subscribeModal = document.getElementById('subscribe-modal');
+    const subscribeCloseButton = document.getElementById('subscribe-close-button');
 
     let currentFilter = 'all';
 
@@ -299,6 +308,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const postElement = document.createElement('div');
             postElement.className = 'scroll-animate bg-black bg-opacity-30 p-6 rounded-xl border border-gray-800 hover:border-fuchsia-500 transition-all duration-300 flex flex-col';
             const colorClasses = categoryColors[post.category] || 'bg-gray-500/20 text-gray-300';
+            
+            const readMoreButton = post.category === 'zero-day' 
+                ? `<button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>`
+                : `<a href="post.html?post=${post.filename}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</a>`;
+
             postElement.innerHTML = `
                 <div>
                     <div class="flex justify-between items-center mb-3">
@@ -308,7 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <h3 class="text-2xl font-bold text-white mb-4">${post.title}</h3>
                     <p class="text-gray-400 flex-grow">${post.excerpt}</p>
                 </div>
-                <button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>
+                ${readMoreButton}
             `;
             postsContainer.appendChild(postElement);
         });
@@ -372,6 +386,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Subscribe Modal Logic
+    const openSubscribeModal = () => subscribeModal.classList.remove('hidden');
+    const closeSubscribeModal = () => subscribeModal.classList.add('hidden');
+    subscribeButton.addEventListener('click', openSubscribeModal);
+    mobileSubscribeButton.addEventListener('click', openSubscribeModal);
+    subscribeCloseButton.addEventListener('click', closeSubscribeModal);
+
 
     const orb = document.getElementById('cursor-orb');
     if (window.matchMedia('(pointer: fine)').matches) {
@@ -398,7 +419,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hideModal = () => { modal.classList.add('hidden'); document.body.style.overflow = ''; };
     postsContainer.addEventListener('click', (e) => {
         const readMoreButton = e.target.closest('.read-more-btn');
-        if (readMoreButton) {
+        if (readMoreButton && readMoreButton.tagName === 'BUTTON') {
             const postId = readMoreButton.dataset.postId;
             const post = blogPosts.find(p => p.id === postId);
             if (post) openModal(post);
