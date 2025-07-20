@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Zero Day Briefing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        .neon-text {
+            text-shadow:
+                0 0 5px rgba(0, 191, 255, 0.8), 0 0 10px rgba(0, 191, 255, 0.8),
+                0 0 20px rgba(0, 191, 255, 0.8), 0 0 40px rgba(0, 191, 255, 0.6),
+                0 0 80px rgba(0, 191, 255, 0.6);
+            color: #fff;
+        }
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px, 0) skew(0deg); }
+            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
+            62% { transform: translate(0, 0) skew(5deg); }
+        }
+        .glitch { animation: glitch 1s linear infinite; }
+        #cursor-orb {
+            position: fixed; width: 20px; height: 20px; border-radius: 50%;
+            background: rgba(0, 191, 255, 0.5); box-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
+            pointer-events: none; transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out, width 0.2s ease-out, height 0.2s ease-out;
+            z-index: 9999;
+        }
+        .noise::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><g fill-opacity="0.02" fill="%23ffffff"><rect x="0" y="0" width="800" height="800"/><rect x="100" y="100" width="10" height="10"/><rect x="200" y="200" width="5" height="5"/><rect x="300" y="300" width="2" height="2"/><rect x="450" y="450" width="1" height="1"/><rect x="650" y="250" width="3" height="3"/></g></svg>');
+            z-index: -1; opacity: 0.5;
+        }
+        .scanline-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000;
+            background: linear-gradient(to bottom, rgba(22, 22, 22, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background-size: 100% 4px; animation: scanline 10s linear infinite;
+        }
+        @keyframes scanline { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .matrix-rain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -2;
+        }
+        .matrix-rain span {
+            position: absolute; color: #0f0; font-family: 'Roboto Mono', monospace; font-size: 16px; opacity: 0.6;
+            animation: rain 5s linear infinite;
+        }
+        @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] relative noise">
+
+    <div id="matrix-rain" class="matrix-rain"></div>
+    <div id="cursor-orb"></div>
+    <div class="scanline-overlay"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 bg-[#0a0a0a] bg-opacity-80 backdrop-blur-sm z-40 border-b border-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-baseline space-x-6">
+                <!-- IMPORTANT: Link back to your main page -->
+                <a href="index.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Zero-Day Briefing</a>
+                <!-- This is the new link to the about page -->
+                <a href="about.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">About</a>
+            </div>
+            <button class="bg-fuchsia-600 text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-fuchsia-500 transition-colors">Subscribe</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- About Page Content -->
+        <div class="container mx-auto px-4 sm:px-6 pt-32 pb-16">
+            <div class="max-w-3xl mx-auto">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider leading-tight flex items-center">
+                     <svg class="inline-block w-12 h-12 sm:w-16 sm:h-16 mr-4 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>About <span class="neon-text">Zero Day Briefing</span></span>
+                </h1>
+                <div class="mt-8 text-gray-300 space-y-4 text-lg leading-relaxed">
+                    <p>
+                        Zero Day Briefing is an independent collective of cybersecurity researchers, threat intelligence analysts, and ethical hackers. Our mission is to provide unfiltered, up-to-the-minute intelligence on the threats that matter. We operate in the digital shadows to bring clarity to the chaos of the cyber landscape.
+                    </p>
+                    <p>
+                        We believe that knowledge is the best defense. By dissecting emerging exploits, tracking active threat groups, and evaluating the latest tools, we empower security professionals and enthusiasts to stay ahead of the curve. What you see here is not just news; it's actionable intelligence from the front lines.
+                    </p>
+                    <p>
+                        Welcome to the network.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Matrix Rain Logic
+    const matrixRainContainer = document.getElementById('matrix-rain');
+    function createRainDrop() {
+        const drop = document.createElement('span');
+        drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96); // Katakana characters
+        drop.style.left = Math.random() * 100 + 'vw';
+        drop.style.animationDuration = Math.random() * 3 + 3 + 's';
+        matrixRainContainer.appendChild(drop);
+        setTimeout(() => drop.remove(), 6000);
+    }
+    setInterval(createRainDrop, 100);
+
+    // Cursor Orb Logic
+    const orb = document.getElementById('cursor-orb');
+    if (window.matchMedia('(pointer: fine)').matches) {
+        document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
+    } else {
+        orb.style.display = 'none';
+    }
+});
+</script>
+
+</body>
+</html>
