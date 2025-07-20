@@ -74,8 +74,15 @@
             animation: rain 5s linear infinite;
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
+        
+        /* **FIXED CSS:** Ensures long text and code blocks wrap correctly inside the modal */
         #modal-content {
             overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+        #modal-content pre, #modal-content code {
+            white-space: pre-wrap;
+            word-break: break-all;
         }
     </style>
 </head>
