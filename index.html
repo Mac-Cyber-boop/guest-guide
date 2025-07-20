@@ -135,8 +135,8 @@
     
     <!-- Subscribe Modal -->
     <div id="subscribe-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center">
-            <button id="subscribe-close-button" class="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
+        <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center relative">
+            <button id="subscribe-close-button" class="absolute top-4 right-4 text-gray-500 hover:text-white text-2xl">&times;</button>
             <h2 class="text-2xl font-bold neon-text mb-4">Join the Network</h2>
             <p class="text-gray-400 mb-6">Subscribe for weekly intelligence briefings.</p>
             <p class="text-sm text-gray-500">This is a demo. In a real application, this form would integrate with an email service.</p>
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 
                 postData.content = marked.parse(content);
                 postData.id = file.sha;
-                postData.filename = file.name; // Store filename for routing
+                postData.filename = file.name;
                 return postData;
             }));
             posts.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             postElement.className = 'scroll-animate bg-black bg-opacity-30 p-6 rounded-xl border border-gray-800 hover:border-fuchsia-500 transition-all duration-300 flex flex-col';
             const colorClasses = categoryColors[post.category] || 'bg-gray-500/20 text-gray-300';
             
-            const readMoreButton = post.category === 'zero-day' 
+            const readMoreLink = post.category === 'zero-day' 
                 ? `<button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>`
                 : `<a href="post.html?post=${post.filename}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</a>`;
 
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <h3 class="text-2xl font-bold text-white mb-4">${post.title}</h3>
                     <p class="text-gray-400 flex-grow">${post.excerpt}</p>
                 </div>
-                ${readMoreButton}
+                ${readMoreLink}
             `;
             postsContainer.appendChild(postElement);
         });
@@ -369,13 +369,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    searchInput.addEventListener('keyup', (e) => {
+    searchInput.addEventListener('input', (e) => {
         const searchTerm = e.target.value.toLowerCase();
         if (searchTerm.length > 0) {
             const searchResults = blogPosts.filter(post => 
                 post.title.toLowerCase().includes(searchTerm) || 
-                post.excerpt.toLowerCase().includes(searchTerm) ||
-                post.content.toLowerCase().includes(searchTerm)
+                post.excerpt.toLowerCase().includes(searchTerm)
             );
             renderPosts(searchResults);
             feedTitle.textContent = `Search Results for "${searchTerm}"`;
