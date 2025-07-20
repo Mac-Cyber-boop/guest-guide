@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - Zero Day Briefing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        .font-mono { font-family: 'Roboto Mono', monospace; }
+        .neon-text {
+            text-shadow:
+                0 0 5px rgba(0, 191, 255, 0.8), 0 0 10px rgba(0, 191, 255, 0.8),
+                0 0 20px rgba(0, 191, 255, 0.8), 0 0 40px rgba(0, 191, 255, 0.6),
+                0 0 80px rgba(0, 191, 255, 0.6);
+            color: #fff;
+        }
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px, 0) skew(0deg); }
+            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
+            62% { transform: translate(0, 0) skew(5deg); }
+        }
+        .glitch { animation: glitch 1s linear infinite; }
+        #cursor-orb {
+            position: fixed; width: 20px; height: 20px; border-radius: 50%;
+            background: rgba(0, 191, 255, 0.5); box-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
+            pointer-events: none; transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out, width 0.2s ease-out, height 0.2s ease-out;
+            z-index: 9999;
+        }
+        .noise::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><g fill-opacity="0.02" fill="%23ffffff"><rect x="0" y="0" width="800" height="800"/><rect x="100" y="100" width="10" height="10"/><rect x="200" y="200" width="5" height="5"/><rect x="300" y="300" width="2" height="2"/><rect x="450" y="450" width="1" height="1"/><rect x="650" y="250" width="3" height="3"/></g></svg>');
+            z-index: -1; opacity: 0.5;
+        }
+        .scanline-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000;
+            background: linear-gradient(to bottom, rgba(22, 22, 22, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background-size: 100% 4px; animation: scanline 10s linear infinite;
+        }
+        @keyframes scanline { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .matrix-rain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -2;
+        }
+        .matrix-rain span {
+            position: absolute; color: #0f0; font-family: 'Roboto Mono', monospace; font-size: 16px; opacity: 0.6;
+            animation: rain 5s linear infinite;
+        }
+        @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
+    </style>
+</head>
+<body class="bg-[#0a0a0a] relative noise">
+
+    <div id="matrix-rain" class="matrix-rain"></div>
+    <div id="cursor-orb"></div>
+    <div class="scanline-overlay"></div>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 bg-[#0a0a0a] bg-opacity-80 backdrop-blur-sm z-40 border-b border-gray-800">
+        <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-baseline space-x-6">
+                <a href="index.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Briefings</a>
+                <a href="about.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">About</a>
+                <a href="services.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Services</a>
+                <a href="contact.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Contact</a>
+            </div>
+            <button class="bg-fuchsia-600 text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-fuchsia-500 transition-colors">Subscribe</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Services Page Content -->
+        <div class="container mx-auto px-4 sm:px-6 pt-32 pb-16">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider leading-tight flex items-center">
+                     <svg class="inline-block w-12 h-12 sm:w-16 sm:h-16 mr-4 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span>Offensive <span class="neon-text">Security Services</span></span>
+                </h1>
+                
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Service Item -->
+                    <div class="bg-black/30 p-6 border border-gray-800 rounded-lg">
+                        <h3 class="text-2xl font-bold text-fuchsia-400 font-mono">Pentest</h3>
+                        <p class="mt-2 text-gray-400">Simulating real-world attacks to identify and exploit vulnerabilities in your networks, applications, and infrastructure before malicious actors do.</p>
+                    </div>
+                    <!-- Service Item -->
+                    <div class="bg-black/30 p-6 border border-gray-800 rounded-lg">
+                        <h3 class="text-2xl font-bold text-fuchsia-400 font-mono">Vulnerability Assessments</h3>
+                        <p class="mt-2 text-gray-400">Comprehensive scanning and analysis to discover, classify, and prioritize security weaknesses across your digital assets.</p>
+                    </div>
+                    <!-- Service Item -->
+                    <div class="bg-black/30 p-6 border border-gray-800 rounded-lg">
+                        <h3 class="text-2xl font-bold text-fuchsia-400 font-mono">Cloud Security</h3>
+                        <p class="mt-2 text-gray-400">Auditing and hardening your cloud environments (AWS, Azure, GCP) against misconfigurations, data exposure, and unauthorized access.</p>
+                    </div>
+                    <!-- Service Item -->
+                    <div class="bg-black/30 p-6 border border-gray-800 rounded-lg">
+                        <h3 class="text-2xl font-bold text-fuchsia-400 font-mono">Forensic Investigations</h3>
+                        <p class="mt-2 text-gray-400">In-depth analysis of security incidents to determine the attack vector, scope of the breach, and to recover critical data.</p>
+                    </div>
+                </div>
+
+                <!-- Inquiry Form -->
+                <div class="mt-20">
+                    <h2 class="text-3xl font-bold font-mono text-center">Open a Secure Channel</h2>
+                    <form class="mt-8 max-w-xl mx-auto space-y-6 font-mono">
+                        <div>
+                            <label for="email" class="text-green-400">Your Encrypted Email:</label>
+                            <input type="email" id="email" name="email" required class="w-full mt-2 bg-transparent border-b-2 border-gray-600 text-white focus:outline-none focus:border-fuchsia-500 p-2">
+                        </div>
+                        <div>
+                            <label for="service" class="text-green-400">Service of Interest:</label>
+                            <select id="service" name="service" required class="w-full mt-2 bg-gray-900 border-2 border-gray-600 text-white focus:outline-none focus:border-fuchsia-500 p-2 rounded">
+                                <option>Pentest</option>
+                                <option>Vulnerability Assessment</option>
+                                <option>Cloud Security</option>
+                                <option>Forensic Investigation</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="message" class="text-green-400">Briefing:</label>
+                            <textarea id="message" name="message" rows="4" required class="w-full mt-2 bg-transparent border-2 border-gray-600 text-white focus:outline-none focus:border-fuchsia-500 p-2 rounded"></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="bg-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-fuchsia-500 transition-colors">Transmit Securely</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Matrix Rain Logic
+    const matrixRainContainer = document.getElementById('matrix-rain');
+    function createRainDrop() {
+        const drop = document.createElement('span');
+        drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96);
+        drop.style.left = Math.random() * 100 + 'vw';
+        drop.style.animationDuration = Math.random() * 3 + 3 + 's';
+        matrixRainContainer.appendChild(drop);
+        setTimeout(() => drop.remove(), 6000);
+    }
+    setInterval(createRainDrop, 100);
+
+    // Cursor Orb Logic
+    const orb = document.getElementById('cursor-orb');
+    if (window.matchMedia('(pointer: fine)').matches) {
+        document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
+    } else {
+        orb.style.display = 'none';
+    }
+});
+</script>
+
+</body>
+</html>
