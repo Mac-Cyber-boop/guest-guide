@@ -68,7 +68,7 @@
     <header class="fixed top-0 left-0 right-0 bg-[#0a0a0a] bg-opacity-80 backdrop-blur-sm z-40 border-b border-gray-800">
         <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <div class="flex items-baseline space-x-6">
-                <a href="index.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Briefings</a>
+                <a href="index.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Zero-Day Briefing</a>
                 <a href="about.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">About</a>
                 <a href="services.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Services</a>
                 <a href="contact.html" class="text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Contact</a>
@@ -112,7 +112,7 @@
                 <!-- Inquiry Form -->
                 <div class="mt-20">
                     <h2 class="text-3xl font-bold font-mono text-center">Open a Secure Channel</h2>
-                    <form class="mt-8 max-w-xl mx-auto space-y-6 font-mono">
+                    <form id="contact-form" action="https://formspree.io/f/xnnzjvjp" method="POST" class="mt-8 max-w-xl mx-auto space-y-6 font-mono">
                         <div>
                             <label for="email" class="text-green-400">Your Encrypted Email:</label>
                             <input type="email" id="email" name="email" required class="w-full mt-2 bg-transparent border-b-2 border-gray-600 text-white focus:outline-none focus:border-fuchsia-500 p-2">
@@ -134,6 +134,7 @@
                             <button type="submit" class="bg-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-fuchsia-500 transition-colors">Transmit Securely</button>
                         </div>
                     </form>
+                    <p id="form-status" class="text-center mt-4"></p>
                 </div>
 
             </div>
@@ -161,6 +162,41 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         orb.style.display = 'none';
     }
+    
+    // Formspree Logic
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('form-status');
+    
+    async function handleSubmit(event) {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        fetch(event.target.action, {
+            method: form.method,
+            body: data,
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                status.textContent = "Transmission successful. We will be in touch.";
+                status.style.color = 'lime';
+                form.reset()
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        status.textContent = data["errors"].map(error => error["message"]).join(", ")
+                    } else {
+                        status.textContent = "Oops! There was a problem submitting your form";
+                    }
+                     status.style.color = 'red';
+                })
+            }
+        }).catch(error => {
+            status.textContent = "Oops! There was a problem submitting your form";
+            status.style.color = 'red';
+        });
+    }
+    form.addEventListener("submit", handleSubmit)
 });
 </script>
 
