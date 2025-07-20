@@ -6,6 +6,7 @@
     <title>Zero Day Briefing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -73,6 +74,11 @@
             animation: rain 5s linear infinite;
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
+        
+        /* **FIXED LINE:** Ensures long text wraps inside the modal */
+        #modal-content {
+            overflow-wrap: break-word;
+        }
     </style>
 </head>
 <body class="bg-[#0a0a0a] relative noise">
