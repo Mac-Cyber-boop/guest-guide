@@ -212,17 +212,26 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
     let blogPosts = [];
+    
+    // --- GitHub API Configuration ---
+    // IMPORTANT: Replace with your GitHub username and repository name
+    const GITHUB_OWNER = 'mac-cyber-boop';
+    const GITHUB_REPO = 'guest-guide';
 
     // --- Fetch Blog Posts from GitHub ---
     async function fetchBlogPosts() {
+        // This API call gets the contents of the _posts directory
+        const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/_posts`;
         try {
-            // This file will list all your markdown post files. You must create it.
-            const response = await fetch('_posts/posts.json');
-            if (!response.ok) throw new Error('posts.json not found.');
-            const postFiles = await response.json();
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Could not fetch posts from GitHub: ${response.statusText}`);
+            const files = await response.json();
+
+            // Filter out non-markdown files and the posts.json file itself
+            const postFiles = files.filter(file => file.name.endsWith('.md'));
 
             const posts = await Promise.all(postFiles.map(async file => {
-                const postResponse = await fetch(`_posts/${file}`);
+                const postResponse = await fetch(file.download_url);
                 const markdown = await postResponse.text();
                 
                 // Simple front matter parser
@@ -235,19 +244,22 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const parts = line.split(':');
                     if (parts.length > 1) {
                         const key = parts[0].trim();
-                        const value = parts.slice(1).join(':').trim();
+                        // Re-join the rest of the line in case the value contains a colon
+                        const value = parts.slice(1).join(':').trim().replace(/^"(.*)"$/, '$1');
                         postData[key] = value;
                     }
                 });
                 
                 postData.content = marked.parse(content);
-                postData.id = file; // Use filename as ID
+                postData.id = file.sha; // Use file SHA as a unique ID
                 return postData;
             }));
+            // Sort posts by date, newest first
+            posts.sort((a, b) => new Date(b.date) - new Date(a.date));
             return posts;
         } catch (error) {
             console.error("Failed to fetch blog posts:", error);
-            postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Make sure you have a '_posts' folder with a 'posts.json' file listing your markdown files.</p>`;
+            postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Check GitHub repo details and ensure the '_posts' folder exists.</p>`;
             return [];
         }
     }
@@ -255,7 +267,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // DOM Elements
     const postsContainer = document.getElementById('blog-posts-container');
     const filterContainer = document.getElementById('filter-container');
-    const navLinks = document.querySelectorAll('.nav-link');
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -442,9 +453,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     setInterval(createRainDrop, 100);
 
     // Initial render
-    blogPosts = await fetchBlogPosts();
-    applyFilter('all');
-    typeTerminal();
+    async function init() {
+        blogPosts = await fetchBlogPosts();
+        applyFilter('all');
+        typeTerminal();
+    }
+
+    init();
 });
 </script>
 
