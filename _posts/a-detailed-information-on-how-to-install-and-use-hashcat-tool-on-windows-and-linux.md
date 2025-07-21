@@ -1,6 +1,6 @@
 ```yaml
 ---
-title: "A detailed information on how to install and use hashcat tool on Windows and Linux"
+title: "Hashcat : Installation and Usage"
 date: 2025-07-20
 category: tools
 excerpt: Master the art of password cracking with a comprehensive guide to installing and utilizing the powerful hashcat tool on both Windows and Linux systems.
