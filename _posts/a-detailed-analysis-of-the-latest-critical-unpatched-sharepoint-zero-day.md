@@ -1,6 +1,6 @@
 ```yaml
 ---
-title: "A detailed analysis of the latest Critical Unpatched SharePoint Zero-Day"
+title: "Critical Unpatched SharePoint Zero-Day Announced, Breaches 75+ Company Servers"
 date: 2025-07-20
 category: zero-day
 excerpt: A critical, unpatched zero-day vulnerability in Microsoft SharePoint allows remote code execution via a crafted web request, bypassing all existing authentication and authorization mechanisms.
