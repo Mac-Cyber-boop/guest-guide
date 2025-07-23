@@ -1,5 +1,5 @@
 ---
-title: "A detailed information on how to install and use Burpsuite tool on Windows and Linux. Explain the Options and Modules inside the Tool"
+title: "Bupsuite : Bane for Appsec Pentesters"
 date: 2025-07-20
 category: tools
 excerpt: Master Burp Suite: This guide provides a comprehensive walkthrough of installation on Windows and Linux, exploring its core features, modules, and practical applications for penetration testing and web security assessments.
