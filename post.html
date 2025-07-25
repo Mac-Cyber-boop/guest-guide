@@ -89,6 +89,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
                              
     </style>
+
+  <meta name="description" id="meta-description" content="Cybersecurity post.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" id="canonical-link" href="">
+  <meta property="og:title" id="og-title" content="">
+  <meta property="og:description" id="og-description" content="">
+  <meta property="og:url" id="og-url" content="">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
+
 </head>
 <body class="bg-[#0a0a0a] relative noise">
 
@@ -220,6 +230,59 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     fetchPost();
 });
+</script>
+
+
+  <script type="application/ld+json" id="structured-data">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "",
+    "description": "",
+    "url": "",
+    "datePublished": "",
+    "author": {
+      "@type": "Person",
+      "name": "Zero Day Briefing"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Zero Day Briefing"
+    }
+  }
+  </script>
+
+<script>
+  function setMetaTagsFromPost(postTitle, postDesc, postURL, postDate) {
+    document.title = postTitle;
+    document.getElementById("meta-description").setAttribute("content", postDesc);
+    document.getElementById("canonical-link").setAttribute("href", postURL);
+    document.getElementById("og-title").setAttribute("content", postTitle);
+    document.getElementById("og-description").setAttribute("content", postDesc);
+    document.getElementById("og-url").setAttribute("content", postURL);
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": postTitle,
+      "description": postDesc,
+      "url": postURL,
+      "datePublished": postDate,
+      "author": { "@type": "Person", "name": "Zero Day Briefing" },
+      "publisher": { "@type": "Organization", "name": "Zero Day Briefing" }
+    };
+    document.getElementById("structured-data").textContent = JSON.stringify(schema, null, 2);
+  }
+
+  // Example: Replace with real post data from fetch/render logic
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const fileName = urlParams.get('post') || 'unknown-post';
+  const title = decodeURIComponent(fileName).replace(/[-_]/g, ' ').replace('.md', '');
+  const postURL = window.location.href;
+  const postDate = new Date().toISOString().split('T')[0];
+  const postDesc = `Detailed cybersecurity insights on ${title}`;
+  setMetaTagsFromPost(title, postDesc, postURL, postDate);
 </script>
 
 </body>

@@ -92,6 +92,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-NTSNP7RZ');</script>
 <!-- End Google Tag Manager -->                      
     </style>
+
+  <meta name="description" content="Zero Day Briefing - Cybersecurity intelligence, zero-day reports, threat actor tracking.">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://zeroday.site/index.html">
+  <meta property="og:title" content="Zero Day Briefing">
+  <meta property="og:description" content="Elite Cybersecurity Briefings. Stay ahead of zero-day threats and blackhat activity.">
+  <meta property="og:url" content="https://zeroday.site/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
 </head>
 <body class="bg-[#0a0a0a] relative noise">
 
@@ -517,6 +528,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         init();
     });
     </script>
+
+
+  <div id="subscribe-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+    <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center">
+      <button onclick="this.closest('#subscribe-modal').classList.add('hidden');" class="absolute top-4 right-4 text-white text-2xl">&times;</button>
+      <h2 class="text-2xl font-bold neon-text mb-4">Join the Network</h2>
+      <form action="https://formspree.io/f/your-id" method="POST" class="space-y-4">
+        <input type="email" name="email" placeholder="Your email" required class="w-full p-3 bg-black border border-fuchsia-500 rounded text-white" />
+        <button type="submit" class="bg-fuchsia-600 w-full py-3 font-bold text-white rounded hover:bg-fuchsia-500">Subscribe</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Zero Day Briefing",
+    "url": "https://zeroday.site",
+    "description": "Cybersecurity briefings on zero-day threats, attack campaigns, and hacker tooling.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Zero Day Briefing"
+    }
+  }
+  </script>
 
 </body>
 </html>
