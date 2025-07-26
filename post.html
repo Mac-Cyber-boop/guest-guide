@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zero Day Briefing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <!-- Markdown Parser -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -58,16 +58,23 @@
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
         
+        /* Enhanced CSS: Ensure proper word-breaking for all content */
         .post-content {
-            font-family: 'Inter', sans-serif !important;
-            white-space: normal !important;
             overflow-wrap: break-word;
             word-wrap: break-word;
+            word-break: keep-all;
+            hyphens: auto;
         }
         .post-content pre, .post-content code {
-            font-family: 'Roboto Mono', monospace !important;
-            white-space: pre-wrap !important;
+            white-space: pre-wrap;
             word-break: break-all;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        .post-content * {
+            overflow-wrap: break-word;
+            word-break: keep-all;
+            hyphens: auto;
         }
         .post-content h3, .post-content h4 {
             font-size: 1.5rem;
@@ -75,30 +82,58 @@
             margin-top: 2rem;
             margin-bottom: 0.5rem;
             color: #ff00ff;
+            overflow-wrap: break-word;
+            word-break: keep-all;
+            hyphens: auto;
         }
         .post-content ul {
             list-style-type: disc;
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NTSNP7RZ');</script>
+<!-- End Google Tag Manager -->
+                             
     </style>
 
-  <meta name="description" id="meta-description" content="Cybersecurity post.">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" id="canonical-link" href="">
-  <meta property="og:title" id="og-title" content="">
-  <meta property="og:description" id="og-description" content="">
-  <meta property="og:url" id="og-url" content="">
-  <meta property="og:type" content="article">
-  <meta name="twitter:card" content="summary_large_image">
+    <meta name="description" id="meta-description" content="Cybersecurity post.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" id="canonical-link" href="">
+    <meta property="og:title" id="og-title" content="">
+    <meta property="og:description" id="og-description" content="">
+    <meta property="og:url" id="og-url" content="">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
 
 </head>
 <body class="bg-[#0a0a0a] relative noise">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-K0NB3XNZXG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-K0NB3XNZXG');
+</script>
+
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTSNP7RZ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
     <div id="matrix-rain" class="matrix-rain"></div>
     <div id="cursor-orb"></div>
     <div class="scanline-overlay"></div>
 
+    <!-- Header -->
     <header class="fixed top-0 left-0 right-0 bg-[#0a0a0a] bg-opacity-80 backdrop-blur-sm z-40 border-b border-gray-800">
         <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
             <div class="flex items-baseline space-x-6">
@@ -112,8 +147,10 @@
     </header>
 
     <main>
+        <!-- Post Content Section -->
         <div class="container mx-auto px-4 sm:px-6 pt-32 pb-16">
             <div id="post-container" class="max-w-3xl mx-auto">
+                <!-- Post content will be injected here by JavaScript -->
                 <p class="text-center text-gray-500">Loading briefing...</p>
             </div>
         </div>
@@ -148,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const markdown = await postResponse.text();
             
             // Simple front matter parser
-            const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
+            const frontMatterMatch = markdown.match(/---[\s\S]*?---/);
             const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
             const content = markdown.replace(/---[\s\S]*?---/, '').trim();
 
@@ -207,8 +244,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
 
-  <script type="application/ld+json" id="structured-data">
-  {
+<script type="application/ld+json" id="structured-data">
+{
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "",
@@ -223,11 +260,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       "@type": "Organization",
       "name": "Zero Day Briefing"
     }
-  }
-  </script>
+}
+</script>
 
 <script>
-  function setMetaTagsFromPost(postTitle, postDesc, postURL, postDate) {
+function setMetaTagsFromPost(postTitle, postDesc, postURL, postDate) {
     document.title = postTitle;
     document.getElementById("meta-description").setAttribute("content", postDesc);
     document.getElementById("canonical-link").setAttribute("href", postURL);
@@ -246,17 +283,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       "publisher": { "@type": "Organization", "name": "Zero Day Briefing" }
     };
     document.getElementById("structured-data").textContent = JSON.stringify(schema, null, 2);
-  }
+}
 
-  // Example: Replace with real post data from fetch/render logic
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const fileName = urlParams.get('post') || 'unknown-post';
-  const title = decodeURIComponent(fileName).replace(/[-_]/g, ' ').replace('.md', '');
-  const postURL = window.location.href;
-  const postDate = new Date().toISOString().split('T')[0];
-  const postDesc = `Detailed cybersecurity insights on ${title}`;
-  setMetaTagsFromPost(title, postDesc, postURL, postDate);
+// Example: Replace with real post data from fetch/render logic
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const fileName = urlParams.get('post') || 'unknown-post';
+const title = decodeURIComponent(fileName).replace(/[-_]/g, ' ').replace('.md', '');
+const postURL = window.location.href;
+const postDate = new Date().toISOString().split('T')[0];
+const postDesc = `Detailed cybersecurity insights on ${title}`;
+setMetaTagsFromPost(title, postDesc, postURL, postDate);
 </script>
 
 </body>
