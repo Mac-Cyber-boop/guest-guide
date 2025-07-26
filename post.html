@@ -59,13 +59,18 @@
         
         /* **FIXED CSS:** Ensures long text and code blocks wrap correctly */
         .post-content {
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
-        .post-content pre, .post-content code {
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
+    font-family: 'Inter', sans-serif !important; /* Force the correct body font */
+    white-space: normal !important;            /* Force normal wrapping behavior */
+    overflow-wrap: break-word;                 /* Ensure long words still break */
+    word-wrap: break-word;
+}
+
+/* This preserves correct styling for any *actual* code snippets inside your post */
+.post-content pre, .post-content code {
+    font-family: 'Roboto Mono', monospace !important;
+    white-space: pre-wrap !important;
+    word-break: break-all;
+}
         .post-content h3, .post-content h4 {
             font-size: 1.5rem;
             font-weight: 700;
