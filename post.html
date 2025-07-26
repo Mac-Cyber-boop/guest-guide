@@ -58,23 +58,14 @@
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
         
-        /* Enhanced CSS: Ensure proper word-breaking for all content */
+        /* **FIXED CSS:** Ensures long text and code blocks wrap correctly */
         .post-content {
             overflow-wrap: break-word;
             word-wrap: break-word;
-            word-break: keep-all;
-            hyphens: auto;
         }
         .post-content pre, .post-content code {
             white-space: pre-wrap;
             word-break: break-all;
-            overflow-wrap: break-word;
-            hyphens: auto;
-        }
-        .post-content * {
-            overflow-wrap: break-word;
-            word-break: keep-all;
-            hyphens: auto;
         }
         .post-content h3, .post-content h4 {
             font-size: 1.5rem;
@@ -82,9 +73,6 @@
             margin-top: 2rem;
             margin-bottom: 0.5rem;
             color: #ff00ff;
-            overflow-wrap: break-word;
-            word-break: keep-all;
-            hyphens: auto;
         }
         .post-content ul {
             list-style-type: disc;
@@ -102,14 +90,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                              
     </style>
 
-    <meta name="description" id="meta-description" content="Cybersecurity post.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" id="canonical-link" href="">
-    <meta property="og:title" id="og-title" content="">
-    <meta property="og:description" id="og-description" content="">
-    <meta property="og:url" id="og-url" content="">
-    <meta property="og:type" content="article">
-    <meta name="twitter:card" content="summary_large_image">
+  <meta name="description" id="meta-description" content="Cybersecurity post.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" id="canonical-link" href="">
+  <meta property="og:title" id="og-title" content="">
+  <meta property="og:description" id="og-description" content="">
+  <meta property="og:url" id="og-url" content="">
+  <meta property="og:type" content="article">
+  <meta name="twitter:card" content="summary_large_image">
 
 </head>
 <body class="bg-[#0a0a0a] relative noise">
@@ -185,7 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const markdown = await postResponse.text();
             
             // Simple front matter parser
-            const frontMatterMatch = markdown.match(/---[\s\S]*?---/);
+            const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
             const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
             const content = markdown.replace(/---[\s\S]*?---/, '').trim();
 
@@ -244,8 +232,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 </script>
 
-<script type="application/ld+json" id="structured-data">
-{
+
+  <script type="application/ld+json" id="structured-data">
+  {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     "headline": "",
@@ -260,11 +249,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       "@type": "Organization",
       "name": "Zero Day Briefing"
     }
-}
-</script>
+  }
+  </script>
 
 <script>
-function setMetaTagsFromPost(postTitle, postDesc, postURL, postDate) {
+  function setMetaTagsFromPost(postTitle, postDesc, postURL, postDate) {
     document.title = postTitle;
     document.getElementById("meta-description").setAttribute("content", postDesc);
     document.getElementById("canonical-link").setAttribute("href", postURL);
@@ -283,17 +272,17 @@ function setMetaTagsFromPost(postTitle, postDesc, postURL, postDate) {
       "publisher": { "@type": "Organization", "name": "Zero Day Briefing" }
     };
     document.getElementById("structured-data").textContent = JSON.stringify(schema, null, 2);
-}
+  }
 
-// Example: Replace with real post data from fetch/render logic
-const queryString = window.location.search;
-const urlParams = new URLSearchParams(queryString);
-const fileName = urlParams.get('post') || 'unknown-post';
-const title = decodeURIComponent(fileName).replace(/[-_]/g, ' ').replace('.md', '');
-const postURL = window.location.href;
-const postDate = new Date().toISOString().split('T')[0];
-const postDesc = `Detailed cybersecurity insights on ${title}`;
-setMetaTagsFromPost(title, postDesc, postURL, postDate);
+  // Example: Replace with real post data from fetch/render logic
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const fileName = urlParams.get('post') || 'unknown-post';
+  const title = decodeURIComponent(fileName).replace(/[-_]/g, ' ').replace('.md', '');
+  const postURL = window.location.href;
+  const postDate = new Date().toISOString().split('T')[0];
+  const postDesc = `Detailed cybersecurity insights on ${title}`;
+  setMetaTagsFromPost(title, postDesc, postURL, postDate);
 </script>
 
 </body>
