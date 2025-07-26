@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zero Day Briefing</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -57,20 +58,17 @@
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
         
-        /* **FIXED CSS:** Ensures long text and code blocks wrap correctly */
         .post-content {
-    font-family: 'Inter', sans-serif !important; /* Force the correct body font */
-    white-space: normal !important;            /* Force normal wrapping behavior */
-    overflow-wrap: break-word;                 /* Ensure long words still break */
-    word-wrap: break-word;
-}
-
-/* This preserves correct styling for any *actual* code snippets inside your post */
-.post-content pre, .post-content code {
-    font-family: 'Roboto Mono', monospace !important;
-    white-space: pre-wrap !important;
-    word-break: break-all;
-}
+            font-family: 'Inter', sans-serif !important;
+            white-space: normal !important;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+        .post-content pre, .post-content code {
+            font-family: 'Roboto Mono', monospace !important;
+            white-space: pre-wrap !important;
+            word-break: break-all;
+        }
         .post-content h3, .post-content h4 {
             font-size: 1.5rem;
             font-weight: 700;
