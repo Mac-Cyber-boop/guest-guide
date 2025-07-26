@@ -6,8 +6,6 @@ category: hot-attacks
 excerpt: Understanding the X-Forwarded-For header is crucial for accurate security analysis, but its inherent vulnerabilities necessitate careful scrutiny before relying on it for critical decisions.
 ---
 
-<div class="post-content">
-
 # X-Forwarded-For: Friend or Foe? Decoding the Hidden Threat in Your Server Logs
 
 The X-Forwarded-For (XFF) header is a ubiquitous part of HTTP requests, particularly within environments employing reverse proxies, load balancers, and CDNs.  Its purpose is seemingly simple: to identify the original client IP address when a request traverses multiple intermediaries. However, its simplicity masks a significant security risk.  This post delves into the intricacies of XFF, exploring its functionality, vulnerabilities, and how to determine when – and crucially, *when not* – to trust its data.
@@ -56,5 +54,4 @@ Instead of relying on XFF alone, prioritize more robust security measures:
 #### Conclusion
 
 While the XFF header can offer some contextual information about a request's journey, its vulnerability to spoofing and lack of standardization renders it an unreliable source of security-sensitive data.  Security professionals should prioritize other, more robust authentication and access control methods, treating XFF as supplemental information at best, and always with a healthy dose of skepticism. Never make critical security decisions based on the XFF header alone.
-</div>
 ```
