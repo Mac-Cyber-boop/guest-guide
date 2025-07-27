@@ -46,6 +46,33 @@ def generate_filename(title):
     s = s.strip('-')
     return f"{s}.md"
 
+def get_latest_cybersecurity_topic():
+    """
+    Uses AI to find the single most important cybersecurity news story or vulnerability
+    disclosed in the last 24 hours.
+    """
+    log_info("Asking AI to research the latest cybersecurity topic...")
+    prompt = """
+    You are a world-class cybersecurity threat intelligence analyst.
+    Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
+    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours.
+
+    Return only the specific, descriptive topic name. For example:
+    - "Critical RCE Vulnerability in Apache Flink"
+    - "BlackCat Ransomware Targets Healthcare Sector"
+    - "Analysis of the new 'Sandman' APT Espionage Campaign"
+
+    Provide only the topic.
+    """
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        topic = response.text.strip()
+        log_success(f"AI identified the latest topic: {topic}")
+        return topic
+    except Exception as e:
+        log_error(f"Could not get the latest topic from AI: {e}")
+
 def get_creative_title(topic):
     """Uses AI to generate a compelling title."""
     log_info("Asking AI to generate a creative title...")
@@ -172,17 +199,16 @@ def push_to_github(filename, content):
         log_error(f"Failed to push to GitHub: {e}. Response: {response.text}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        # This script is now autonomous and doesn't require a topic.
-        # However, we keep the argument check for manual runs.
-        original_topic = get_latest_cybersecurity_topic()
-    else:
-        original_topic = sys.argv[1]
+    # --- Fully Autonomous Workflow ---
     
+    # 1. Get the latest topic from the AI
+    original_topic = get_latest_cybersecurity_topic()
+    
+    # 2. The rest of the process is the same as before
     creative_title = get_creative_title(original_topic)
     post_category = research_cve_status(original_topic)
     markdown_content = get_ai_generated_post(creative_title, original_topic, post_category)
     new_filename = generate_filename(creative_title)
     push_to_github(new_filename, markdown_content)
     
-    log_success("Automation complete. Your new post should be live in ~60 seconds.")
+    log_success("Automation complete. A new post should be live in ~60 seconds.")
