@@ -52,7 +52,7 @@ def get_latest_cybersecurity_topic():
     You are a world-class cybersecurity threat intelligence analyst.
     Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
     vulnerability disclosure, major threat actor campaign, Zero-Day vulnerabilities, Latest Cybersecurity tools and tricks, Hacking tools, Hacking tricks that has emerged in the last 24 hours.
-
+    DO NOT HALUCINATE. DO NOT CREATE IMAGINARY TOPICS, THIS NEEDS TO BE REAL WORLD NEWS AND TOPIC.
     Return only the specific, descriptive topic name. For example:
     - "Critical RCE Vulnerability in Apache Flink"
     - "BlackCat Ransomware Targets Healthcare Sector"
@@ -74,7 +74,7 @@ def get_creative_title(topic):
     log_info("Asking AI to generate a creative title...")
     prompt = f"""
    You are an expert cybersecurity journalist and editor for the 'Zero Day Briefing' blog. Your task is to take a technical topic and write a compelling, high-impact title.
-
+   DO NOT HALUCINATE. DO NOT CREATE IMAGINARY TOPICS, THIS NEEDS TO BE REAL WORLD NEWS AND TOPIC.
     **Instructions:**
     1.  **Be Specific:** Instead of "New Vulnerability Found," use "Critical RCE Flaw in Apache Flink Threatens Data Centers."
     2.  **Use Strong Verbs:** Use words like "Uncovered," "Exposed," "Bypasses," "Targets," "Disrupts."
@@ -127,7 +127,7 @@ def research_cve_status(topic):
 def get_ai_generated_post(title, topic, category):
     log_info(f"Sending final request to AI with title '{title}' and category '{category}'...")
     prompt = f"""
-    You are a world-class cybersecurity analyst and writer for the 'Zero Day Briefing' blog. Your tone is technical, engaging, and authoritative.
+    You are a world-class cybersecurity analyst and writer for the 'Zero Day Briefing' blog. Your tone is technical, engaging, and authoritative.DO NOT HALUCINATE. DO NOT CREATE IMAGINARY TOPICS, THIS NEEDS TO BE REAL WORLD NEWS AND TOPIC.
     
     Write a detailed, in-depth blog post about the following original topic: "{topic}".
 
