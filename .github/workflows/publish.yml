@@ -1,8 +1,7 @@
 name: Autonomous AI Blog Publisher
 
 on:
-  # This schedule runs at 6, 9, 12, 15, 18, 21, 0, and 3 UTC, every day of the week.
-  # This achieves ~8 posts per day. Adjust as needed.
+  # This schedule runs the job every 3 hours.
   schedule:
     - cron: '0 */3 * * *'
   # This line allows you to run the workflow manually from the Actions tab
@@ -27,9 +26,11 @@ jobs:
 
       - name: Run the AI Publisher Script
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          # **FIXED LINE:** Changed the environment variable name to match what the script expects.
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           SEARCH_ENGINE_ID: ${{ secrets.SEARCH_ENGINE_ID }}
         run: |
           python publish.py
+
