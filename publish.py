@@ -16,7 +16,7 @@ POSTS_DIRECTORY = "_posts"
 try:
     GITHUB_TOKEN = os.environ["GH_TOKEN"]
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"] 
+    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
     SEARCH_ENGINE_ID = os.environ["SEARCH_ENGINE_ID"]
 except KeyError as e:
     print(f"ERROR: Missing environment variable: {e}.")
@@ -26,25 +26,48 @@ except KeyError as e:
 genai.configure(api_key=GEMINI_API_KEY)
 
 def log_info(message):
-    """Prints an informational message."""
     print(f"[INFO] {message}")
 
 def log_success(message):
-    """Prints a success message."""
     print(f"\033[92m[SUCCESS]\033[0m {message}")
 
 def log_error(message):
-    """Prints an error message and exits."""
     print(f"\033[91m[ERROR]\033[0m {message}")
     sys.exit(1)
 
 def generate_filename(title):
-    """Creates a URL-friendly filename from a post title."""
     s = title.lower()
     s = re.sub(r'[^a-z0-9\s-]', '', s)
     s = re.sub(r'[\s-]+', '-', s)
     s = s.strip('-')
     return f"{s}.md"
+
+def get_latest_cybersecurity_topic():
+    """
+    Uses AI to find the single most important cybersecurity news story or vulnerability
+    disclosed in the last 24 hours.
+    """
+    log_info("Asking AI to research the latest cybersecurity topic...")
+    prompt = """
+    You are a world-class cybersecurity threat intelligence analyst.
+    Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
+    vulnerability disclosure, major threat actor campaign, Zero-Day vulnerabilities, Latest Cybersecurity tools and tricks, Hacking tools, Hacking tricks that has emerged in the last 24 hours.
+
+    Return only the specific, descriptive topic name. For example:
+    - "Critical RCE Vulnerability in Apache Flink"
+    - "BlackCat Ransomware Targets Healthcare Sector"
+    - "Analysis of the new 'Sandman' APT Espionage Campaign"
+
+    Provide only the topic.
+    """
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        topic = response.text.strip()
+        log_success(f"AI identified the latest topic: {topic}")
+        return topic
+    except Exception as e:
+        log_error(f"Could not get the latest topic from AI: {e}")
 
 def get_creative_title(topic):
     """Uses AI to generate a compelling title."""
@@ -61,7 +84,6 @@ def get_creative_title(topic):
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
-        # Clean up the title, remove quotes and markdown
         creative_title = response.text.strip().replace('"', '').replace('*', '')
         log_success(f"Generated Title: {creative_title}")
         return creative_title
@@ -104,8 +126,7 @@ def get_ai_generated_post(title, topic, category):
     
     Write a detailed, in-depth blog post about the following original topic: "{topic}".
 
-    The post MUST be formatted with a YAML frontmatter block at the very top, followed by the content written in clean HTML.
-    
+    The post MUST be formatted in markdown and MUST include a YAML frontmatter block at the very top.
     The frontmatter block must be enclosed in '---' and contain these exact fields and values:
     - title: "{title}"
     - date: {datetime.date.today().isoformat()}
@@ -161,15 +182,15 @@ def push_to_github(filename, content):
         log_error(f"Failed to push to GitHub: {e}. Response: {response.text}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        log_error("Usage: python publish.py \"Your Blog Post Topic\"")
+    # --- Fully Autonomous Workflow ---
+    # 1. Get the latest topic from the AI
+    original_topic = get_latest_cybersecurity_topic()
     
-    original_topic = sys.argv[1]
-    
+    # 2. The rest of the process is the same as before
     creative_title = get_creative_title(original_topic)
     post_category = research_cve_status(original_topic)
     markdown_content = get_ai_generated_post(creative_title, original_topic, post_category)
     new_filename = generate_filename(creative_title)
     push_to_github(new_filename, markdown_content)
     
-    log_success("Automation complete. Your new post should be live in ~60 seconds.")
+    log_success("Automation complete. A new post should be live in ~60 seconds.")
