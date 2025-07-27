@@ -26,25 +26,69 @@ except KeyError as e:
 genai.configure(api_key=GEMINI_API_KEY)
 
 def log_info(message):
-    """Prints an informational message."""
     print(f"[INFO] {message}")
 
 def log_success(message):
-    """Prints a success message."""
     print(f"\033[92m[SUCCESS]\033[0m {message}")
 
 def log_error(message):
-    """Prints an error message and exits."""
     print(f"\033[91m[ERROR]\033[0m {message}")
     sys.exit(1)
 
 def generate_filename(title):
-    """Creates a URL-friendly filename from a post title."""
     s = title.lower()
     s = re.sub(r'[^a-z0-9\s-]', '', s)
     s = re.sub(r'[\s-]+', '-', s)
     s = s.strip('-')
     return f"{s}.md"
+
+def get_latest_cybersecurity_topic():
+    """
+    Uses AI to find the single most important cybersecurity news story or vulnerability
+    disclosed in the last 24 hours.
+    """
+    log_info("Asking AI to research the latest cybersecurity topic...")
+    prompt = """
+    You are a world-class cybersecurity threat intelligence analyst.
+    Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
+    vulnerability disclosure, major threat actor campaign, Zero-Day vulnerabilities, Latest Cybersecurity tools and tricks, Hacking tools, Hacking tricks that has emerged in the last 24 hours.
+
+    Return only the specific, descriptive topic name. Do NOt Halucinate. Find out real world latest news, threats, topics. For example:
+    - "Critical RCE Vulnerability in Apache Flink"
+    - "BlackCat Ransomware Targets Healthcare Sector"
+    - "Analysis of the new 'Sandman' APT Espionage Campaign"
+
+    Provide only the topic.
+    """
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        topic = response.text.strip()
+        log_success(f"AI identified the latest topic: {topic}")
+        return topic
+    except Exception as e:
+        log_error(f"Could not get the latest topic from AI: {e}")
+
+def get_creative_title(topic):
+    """Uses AI to generate a compelling title."""
+    log_info("Asking AI to generate a creative title...")
+    prompt = f"""
+    You are a marketing expert and copywriter for a top-tier cybersecurity blog called 'Zero Day Briefing'.
+    Your task is to take a technical topic and create a short, compelling, and 'hooked' blog post title.
+    The title should be interesting and make people want to click.
+    
+    TOPIC: "{topic}"
+    
+    Generate one title.
+    """
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        creative_title = response.text.strip().replace('"', '').replace('*', '')
+        log_success(f"Generated Title: {creative_title}")
+        return creative_title
+    except Exception as e:
+        log_error(f"Could not generate title from AI: {e}")
 
 def research_cve_status(topic):
     """Researches a CVE to determine if it's a zero-day."""
@@ -69,64 +113,40 @@ def research_cve_status(topic):
             log_success(f"Research indicates {cve_id} is an active zero-day.")
             return 'zero-day'
         else:
-            log_info(f"Research indicates {cve_id} is a known vulnerability. Categorizing as 'hot-attacks'.")
+            log_info(f"Research indicates {cve_id} is a known vulnerability, not a zero-day. Categorizing as 'hot-attacks'.")
             return 'hot-attacks'
             
     except Exception as e:
         log_error(f"Could not perform Google Search for CVE: {e}")
 
-def get_ai_generated_post(topic, category):
-    """
-    Uses a single, powerful prompt to generate the entire formatted post, including a creative title.
-    """
-    log_info("Sending topic to AI for full article generation...")
-    
-    # This is a "few-shot" prompt. We give it a perfect example to copy.
+def get_ai_generated_post(title, topic, category):
+    log_info(f"Sending final request to AI with title '{title}' and category '{category}'...")
     prompt = f"""
-    You are an autonomous cybersecurity blog writer for 'Zero Day Briefing'. Your output MUST be a single, complete markdown file with YAML frontmatter, followed by the article content in 1500-2000 words.
+    You are a world-class cybersecurity analyst and writer for the 'Zero Day Briefing' blog. Your tone is technical, engaging, and authoritative.
     
-    DO NOT include any commentary, conversation, or explanations before or after the markdown file content. Your entire response must be ONLY the markdown file content and nothing else.
+    Write a detailed, in-depth blog post about the following original topic: "{topic}".
 
-    HERE IS A PERFECT EXAMPLE OF THE REQUIRED OUTPUT FORMAT:
-    ---
-    title: "Critical RCE Flaw in Apache Flink Threatens Data Centers"
-    date: 2025-07-27
-    category: hot-attacks
-    excerpt: "A critical remote code execution vulnerability in Apache Flink allows unauthenticated attackers to take over servers, posing a severe risk to data processing infrastructure worldwide."
-    ---
-    Vulnerability Overview
-    Security researchers have disclosed a critical remote code execution (RCE) vulnerability affecting Apache Flink, a popular open-source framework for stream processing. The flaw allows an attacker to execute arbitrary code on the server, potentially leading to a full system compromise.
-    
-        Affected Versions:</strong> All versions prior to 1.18.0
-        Severity:</strong> Critical (CVSS 9.8)
-        
-   Impact
-   Successful exploitation of this vulnerability could allow attackers to steal sensitive data, deploy ransomware, or use the compromised server as a pivot point to attack other systems within the network.
+    The post MUST be formatted in markdown and MUST include a YAML frontmatter block at the very top.
+    The frontmatter block must be enclosed in '---' and contain these exact fields and values:
+    - title: "{title}"
+    - date: {datetime.date.today().isoformat()}
+    - category: {category}
+    - excerpt: A compelling, one-sentence summary of the article, no more than 50 words.
 
-    **NOW, GENERATE A COMPLETE MARKDOWN FILE IN THE EXACT SAME FORMAT FOR THE FOLLOWING TOPIC:**
-    "{topic}"
+  The main content of the article MUST be written in clean, readable format.
     
-    **USE THE FOLLOWING CATEGORY IN THE FRONTMATTER:**
-    "{category}"
+    **HTML Formatting and Readability Rules:**
+    - The content MUST begin immediately after the final '---' of the frontmatter.
+    - Use Bullet for Bullet points.
+    - Ensure the Bullet Points are used where needed.
+    - Make the content more read friendly.
+    - Ensure proper paragraph breaks to avoid large walls of text.
     """
-    
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
-        
-        # The AI will return the full text, including the frontmatter.
-        full_content = response.text.strip()
-        
-        # Extract the title from the generated frontmatter for the filename
-        title_match = re.search(r'title:\s*["\']?(.*?)["\']?$', full_content, re.MULTILINE)
-        if not title_match:
-            log_error("AI failed to generate a title in the frontmatter.")
-        
-        creative_title = title_match.group(1).strip()
-        
-        log_success(f"AI generated article with title: '{creative_title}'")
-        return creative_title, full_content
-        
+        log_success("AI has generated the full article.")
+        return response.text
     except Exception as e:
         log_error(f"Could not generate content from AI: {e}")
 
@@ -140,7 +160,7 @@ def push_to_github(filename, content):
         get_response = requests.get(url, headers=headers)
         if get_response.status_code == 200:
             sha = get_response.json()['sha']
-            log_info(f"File '{filename}' already exists. Overwriting.")
+            log_info(f"File '{filename}' already exists. This is unusual for an autonomous script. Overwriting.")
     except requests.exceptions.RequestException:
         pass
 
@@ -161,22 +181,15 @@ def push_to_github(filename, content):
         log_error(f"Failed to push to GitHub: {e}. Response: {response.text}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        original_topic = get_latest_cybersecurity_topic()
-    else:
-        original_topic = sys.argv[1]
+    # --- Fully Autonomous Workflow ---
+    # 1. Get the latest topic from the AI
+    original_topic = get_latest_cybersecurity_topic()
     
-    # --- New Simplified Workflow ---
-    # 1. Research the topic to determine the category
+    # 2. The rest of the process is the same as before
+    creative_title = get_creative_title(original_topic)
     post_category = research_cve_status(original_topic)
-    
-    # 2. Generate the title and full content in one step
-    creative_title, full_content = get_ai_generated_post(original_topic, post_category)
-    
-    # 3. Generate a filename from the new title
+    markdown_content = get_ai_generated_post(creative_title, original_topic, post_category)
     new_filename = generate_filename(creative_title)
+    push_to_github(new_filename, markdown_content)
     
-    # 4. Push the new file to GitHub
-    push_to_github(new_filename, full_content)
-    
-    log_success("Automation complete. Your new post should be live in ~60 seconds.")
+    log_success("Automation complete. A new post should be live in ~60 seconds.")
