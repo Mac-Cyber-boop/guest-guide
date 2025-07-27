@@ -108,10 +108,11 @@ def get_ai_generated_post(title, topic, category):
     
     **Formatting and Readability Rules:**
     - The content must be highly readable and well-structured for a technical audience.
-    - Use markdown subheadings (e.g., `#### Subheading Title`) to break up long sections of text.
-    - When creating lists, use markdown hyphens (`-`) for bullet points, not asterisks (`*`).
+    - When creating lists, use actual Bullets for bullet points, not asterisks (`*`).
     - Explain complex concepts clearly and concisely.
     - Ensure proper paragraph breaks to avoid large walls of text.
+    - Add sources of the information in cases of Zero-day and Hot attack categories. Add also where users can apply the patch incases if patch is available.
+    - Try to be as helpful as you can to the reader to fix a Zero-Day or Hot attacks. Do not preassume, use official sources to provide the information  
     """
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
