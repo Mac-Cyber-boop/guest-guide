@@ -19,27 +19,22 @@ try:
     GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"] 
     SEARCH_ENGINE_ID = os.environ["SEARCH_ENGINE_ID"]
 except KeyError as e:
-    print(f"ERROR: Missing environment variable: {e}. Please set GITHUB_TOKEN, GEMINI_API_KEY, GOOGLE_API_KEY, and SEARCH_ENGINE_ID.")
+    print(f"ERROR: Missing environment variable: {e}.")
     sys.exit(1)
 
-# Configure the Gemini API client
 genai.configure(api_key=GEMINI_API_KEY)
 
 def log_info(message):
-    """Prints an informational message."""
     print(f"[INFO] {message}")
 
 def log_success(message):
-    """Prints a success message."""
     print(f"\033[92m[SUCCESS]\033[0m {message}")
 
 def log_error(message):
-    """Prints an error message and exits."""
     print(f"\033[91m[ERROR]\033[0m {message}")
     sys.exit(1)
 
 def generate_filename(title):
-    """Creates a URL-friendly filename from a post title."""
     s = title.lower()
     s = re.sub(r'[^a-z0-9\s-]', '', s)
     s = re.sub(r'[\s-]+', '-', s)
@@ -47,7 +42,6 @@ def generate_filename(title):
     return f"{s}.md"
 
 def get_creative_title(topic):
-    """Uses AI to generate a compelling title."""
     log_info("Asking AI to generate a creative title...")
     prompt = f"""
     You are a marketing expert and copywriter for a top-tier cybersecurity blog called 'Zero Day Briefing'.
@@ -61,7 +55,6 @@ def get_creative_title(topic):
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
-        # Clean up the title, remove quotes and markdown
         creative_title = response.text.strip().replace('"', '').replace('*', '')
         log_success(f"Generated Title: {creative_title}")
         return creative_title
@@ -69,7 +62,6 @@ def get_creative_title(topic):
         log_error(f"Could not generate title from AI: {e}")
 
 def research_cve_status(topic):
-    """Researches a CVE to determine if it's a zero-day."""
     cve_match = re.search(r'(CVE-\d{4}-\d{4,7})', topic, re.IGNORECASE)
     if not cve_match:
         log_info("No CVE found in topic, defaulting category to 'hot-attacks'.")
@@ -84,7 +76,6 @@ def research_cve_status(topic):
         
         snippets = " ".join([item['snippet'] for item in res.get('items', [])]).lower()
         
-        # Analyze search results for keywords
         is_unpatched = "unpatched" in snippets or "no patch" in snippets or "patch is not available" in snippets
         is_exploited = "actively exploited" in snippets or "in the wild" in snippets
         
