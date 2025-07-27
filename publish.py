@@ -51,7 +51,7 @@ def get_latest_cybersecurity_topic():
     prompt = """
     You are a world-class cybersecurity threat intelligence analyst.
     Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
-    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours.
+    vulnerability disclosure, major threat actor campaign, Zero-Day vulnerabilities, Latest Cybersecurity tools and tricks, Hacking tools, Hacking tricks that has emerged in the last 24 hours.
 
     Return only the specific, descriptive topic name. For example:
     - "Critical RCE Vulnerability in Apache Flink"
@@ -138,6 +138,8 @@ def get_ai_generated_post(title, topic, category):
     Formatting and Readability Rules:
     - The content must be highly readable and well-structured for a technical audience.
     - Use markdown subheadings (e.g., `#### Subheading Title`) to break up long sections of text.
+    - Use **bullet points** (with `-`) wherever possible to break down complex information or lists.
+    - Maintain a professional, informative, and engaging tone.
     - When creating lists, use markdown hyphens (`-`) for bullet points, not asterisks (`*`).
     - Explain complex concepts clearly and concisely.
     - Ensure proper paragraph breaks to avoid large walls of text.
