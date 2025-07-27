@@ -14,7 +14,7 @@ POSTS_DIRECTORY = "_posts"
 
 # --- SETUP: API KEYS ---
 try:
-    GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+    GITHUB_TOKEN = os.environ["GH_TOKEN"]
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
     GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
     SEARCH_ENGINE_ID = os.environ["SEARCH_ENGINE_ID"]
