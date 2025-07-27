@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zero Day Briefing</title>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NTSNP7RZ');</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="config.js"></script>
@@ -75,7 +80,6 @@
         }
         @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
 
-        /* **FIXED CSS:** Ensures long text and code blocks wrap correctly inside the modal */
         #modal-content {
             overflow-wrap: break-word;
             word-wrap: break-word;
@@ -98,7 +102,16 @@
 
 </head>
 <body class="bg-[#0a0a0a] relative noise">
-
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0NB3XNZXG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-K0NB3XNZXG');
+    </script>
+    
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTSNP7RZ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="matrix-rain" class="matrix-rain"></div>
     <div id="cursor-orb"></div>
     <div class="scanline-overlay"></div>
@@ -156,8 +169,18 @@
         <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center relative">
             <button id="subscribe-close-button" class="absolute top-4 right-4 text-gray-500 hover:text-white text-2xl">&times;</button>
             <h2 class="text-2xl font-bold neon-text mb-4">Join the Network</h2>
-            <p class="text-gray-400 mb-6">Subscribe for weekly intelligence briefings.</p>
-            <p class="text-sm text-gray-500">This is a demo. In a real application, this form would integrate with an email service.</p>
+            <p class="text-gray-400 mb-6">Get instant alerts on new Zero-Day threats.</p>
+            
+            <form action="https://gmail.us18.list-manage.com/subscribe/post?u=4112bcacde2d580997bd7353b&amp;id=a7546666da&amp;f_id=00d8abe6f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
+                <div class="space-y-4">
+                    <input type="email" name="EMAIL" class="required email w-full bg-transparent border-b-2 border-gray-600 text-white focus:outline-none focus:border-fuchsia-500 p-2" id="mce-EMAIL" required placeholder="Operative ID (Email)">
+                    <div hidden><input type="hidden" name="tags" value="3118582"></div>
+                    <div style="position: absolute; left: -5000px;" aria-hidden="true">
+                        <input type="text" name="b_4112bcacde2d580997bd7353b_a7546666da" tabindex="-1" value="">
+                    </div>
+                    <button type="submit" name="subscribe" id="mc-embedded-subscribe" class="w-full bg-fuchsia-600 text-white font-bold py-3 rounded-lg hover:bg-fuchsia-500 transition-colors">Transmit Securely</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -214,7 +237,7 @@
                 </div>
 
                 <div id="blog-posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -224,7 +247,7 @@
             <div class="p-6 md:p-8">
                 <h2 id="modal-title" class="text-2xl md:text-3xl font-bold neon-text mb-2"></h2>
                 <p id="modal-date" class="font-mono text-sm text-gray-500 mb-6"></p>
-                <div id="modal-content" class="text-gray-300 space-y-4 leading-relaxed"></div>
+                <div id="modal-content" class="text-gray-300 space-y-4 leading-relaxed content-wrapper"></div>
             </div>
             <div class="p-4 bg-black bg-opacity-20 text-right">
                  <button id="close-modal" class="bg-gray-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors">Close</button>
@@ -234,32 +257,29 @@
     
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
+        // All JavaScript logic is now inside this event listener
+        // This ensures all HTML elements are loaded before the script runs.
+        
         let blogPosts = [];
         
-        // --- GitHub API Configuration ---
         const GITHUB_CONFIG = {
             OWNER: 'mac-cyber-boop',
             REPO: 'guest-guide'
         };
 
-        // --- Fetch Blog Posts from GitHub ---
         async function fetchBlogPosts() {
             const url = `https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/_posts`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`Could not fetch posts from GitHub: ${response.statusText}`);
                 const files = await response.json();
-
                 const postFiles = files.filter(file => file.name.endsWith('.md'));
-
                 const posts = await Promise.all(postFiles.map(async file => {
                     const postResponse = await fetch(file.download_url);
                     const markdown = await postResponse.text();
-                    
                     const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
                     const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
                     const content = markdown.replace(/---[\s\S]*?---/, '').trim();
-
                     const postData = {};
                     frontMatterText.split('\n').forEach(line => {
                         const parts = line.split(':');
@@ -269,7 +289,6 @@
                             postData[key] = value;
                         }
                     });
-                    
                     postData.content = marked.parse(content);
                     postData.id = file.sha;
                     postData.filename = file.name;
@@ -284,7 +303,6 @@
             }
         }
 
-        // DOM Elements
         const postsContainer = document.getElementById('blog-posts-container');
         const filterContainer = document.getElementById('filter-container');
         const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -318,16 +336,13 @@
                 postsContainer.innerHTML = `<p class="text-gray-500 text-center col-span-full">No briefings found.</p>`;
                 return;
             }
-
             postsToRender.forEach(post => {
                 const postElement = document.createElement('div');
                 postElement.className = 'scroll-animate bg-black bg-opacity-30 p-6 rounded-xl border border-gray-800 hover:border-fuchsia-500 transition-all duration-300 flex flex-col';
                 const colorClasses = categoryColors[post.category] || 'bg-gray-500/20 text-gray-300';
-                
                 const readMoreLink = post.category === 'zero-day' 
                     ? `<button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>`
                     : `<a href="post.html?post=${post.filename}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</a>`;
-
                 postElement.innerHTML = `
                     <div>
                         <div class="flex justify-between items-center mb-3">
@@ -365,7 +380,6 @@
         mobileMenuButton.addEventListener('click', toggleMobileMenu);
         mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
 
-        // Search Logic
         const openSearch = () => {
             searchOverlay.classList.remove('hidden');
             searchInput.focus();
@@ -400,19 +414,15 @@
             }
         });
 
-        // Subscribe Modal Logic
         const openSubscribeModal = () => subscribeModal.classList.remove('hidden');
         const closeSubscribeModal = () => subscribeModal.classList.add('hidden');
         subscribeButton.addEventListener('click', openSubscribeModal);
         mobileSubscribeButton.addEventListener('click', openSubscribeModal);
         subscribeCloseButton.addEventListener('click', closeSubscribeModal);
 
-
         const orb = document.getElementById('cursor-orb');
         if (window.matchMedia('(pointer: fine)').matches) {
             document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
-            document.addEventListener('mousedown', () => { orb.style.transform = 'translate(-50%, -50%) scale(1.5)'; orb.style.background = 'rgba(255, 0, 255, 0.5)'; });
-            document.addEventListener('mouseup', () => { orb.style.transform = 'translate(-50%, -50%) scale(1)'; orb.style.background = 'rgba(0, 191, 255, 0.5)'; });
         } else {
             orb.style.display = 'none';
         }
@@ -442,7 +452,6 @@
         closeModalBtn.addEventListener('click', hideModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
         
-        // Terminal Animation Logic
         const terminalLines = [
             'Booting ZDB Mainframe...',
             'Connecting to global threat network...',
@@ -476,10 +485,9 @@
             }
         }
         
-        // Matrix Rain Logic
         function createRainDrop() {
             const drop = document.createElement('span');
-            drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96); // Katakana characters
+            drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96);
             drop.style.left = Math.random() * 100 + 'vw';
             drop.style.animationDuration = Math.random() * 3 + 3 + 's';
             matrixRainContainer.appendChild(drop);
@@ -487,7 +495,6 @@
         }
         setInterval(createRainDrop, 100);
 
-        // Initial render
         async function init() {
             blogPosts = await fetchBlogPosts();
             applyFilter('all');
@@ -497,7 +504,6 @@
         init();
     });
     </script>
-
 
   <div id="subscribe-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
     <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center">
