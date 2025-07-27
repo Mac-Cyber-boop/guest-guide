@@ -133,13 +133,14 @@ def get_ai_generated_post(title, topic, category):
     - category: {category}
     - excerpt: A compelling, one-sentence summary of the article, no more than 50 words.
 
-    The main content of the article MUST be written in HTML.
+  The main content of the article MUST be written in clean, readable HTML.
     
     **HTML Formatting and Readability Rules:**
-    - The content must be highly readable and well-structured for a technical audience.
-    - Use `<h4>` tags for subheadings. DO NOT use markdown like '###'.
-    - Use `<ul>` and `<li>` tags for bullet points. DO NOT use markdown like '*' or '-'.
-    - Use `<strong>` tags for bold text. DO NOT use markdown like '**'.
+    - The content MUST begin immediately after the final '---' of the frontmatter.
+    - DO NOT include `<!DOCTYPE html>`, `<html>`, `<head>`, or `<body>` tags.
+    - Use `<h4>` tags for subheadings.
+    - Use `<ul>` and `<li>` tags for bullet points.
+    - Use `<strong>` tags for bold text.
     - Wrap all paragraphs in `<p>` tags.
     - Ensure proper paragraph breaks to avoid large walls of text.
     """
