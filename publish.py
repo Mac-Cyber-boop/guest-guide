@@ -16,59 +16,35 @@ POSTS_DIRECTORY = "_posts"
 try:
     GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"] 
     SEARCH_ENGINE_ID = os.environ["SEARCH_ENGINE_ID"]
 except KeyError as e:
-    print(f"ERROR: Missing environment variable: {e}.")
+    print(f"ERROR: Missing environment variable: {e}. Please set GITHUB_TOKEN, GEMINI_API_KEY, GOOGLE_API_KEY, and SEARCH_ENGINE_ID.")
     sys.exit(1)
 
 # Configure the Gemini API client
 genai.configure(api_key=GEMINI_API_KEY)
 
 def log_info(message):
+    """Prints an informational message."""
     print(f"[INFO] {message}")
 
 def log_success(message):
+    """Prints a success message."""
     print(f"\033[92m[SUCCESS]\033[0m {message}")
 
 def log_error(message):
+    """Prints an error message and exits."""
     print(f"\033[91m[ERROR]\033[0m {message}")
     sys.exit(1)
 
 def generate_filename(title):
+    """Creates a URL-friendly filename from a post title."""
     s = title.lower()
     s = re.sub(r'[^a-z0-9\s-]', '', s)
     s = re.sub(r'[\s-]+', '-', s)
     s = s.strip('-')
     return f"{s}.md"
-
-def get_latest_cybersecurity_topic():
-    """
-    Uses AI to find the single most important cybersecurity news story or vulnerability
-    disclosed in the last 24 hours.
-    """
-    log_info("Asking AI to research the latest cybersecurity topic...")
-    prompt = """
-    You are a world-class cybersecurity threat intelligence analyst.
-    Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
-    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours. Look for online tools and sites, use Google.
-    Also add latest Tools in Cybersecurity and Hacking world. Add Tricks and Tips used by Hackers to exploit systems.
-
-    Return only the specific, descriptive topic name. For example:
-    - "Critical RCE Vulnerability in Apache Flink"
-    - "BlackCat Ransomware Targets Healthcare Sector"
-    - "Analysis of the new 'Sandman' APT Espionage Campaign"
-
-    Provide only the topic.
-    """
-    try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        response = model.generate_content(prompt)
-        topic = response.text.strip()
-        log_success(f"AI identified the latest topic: {topic}")
-        return topic
-    except Exception as e:
-        log_error(f"Could not get the latest topic from AI: {e}")
 
 def get_creative_title(topic):
     """Uses AI to generate a compelling title."""
@@ -85,6 +61,7 @@ def get_creative_title(topic):
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
+        # Clean up the title, remove quotes and markdown
         creative_title = response.text.strip().replace('"', '').replace('*', '')
         log_success(f"Generated Title: {creative_title}")
         return creative_title
@@ -107,6 +84,7 @@ def research_cve_status(topic):
         
         snippets = " ".join([item['snippet'] for item in res.get('items', [])]).lower()
         
+        # Analyze search results for keywords
         is_unpatched = "unpatched" in snippets or "no patch" in snippets or "patch is not available" in snippets
         is_exploited = "actively exploited" in snippets or "in the wild" in snippets
         
@@ -134,15 +112,14 @@ def get_ai_generated_post(title, topic, category):
     - category: {category}
     - excerpt: A compelling, one-sentence summary of the article, no more than 50 words.
 
-    The main content of the article should be at least 1500-2000 words long.
+    The main content of the article should be at least 400 words long.
     
-    Formatting and Readability Rules:
+    **Formatting and Readability Rules:**
     - The content must be highly readable and well-structured for a technical audience.
-    - When creating lists, use actual Bullets for bullet points, not asterisks (`*`).   
+    - Use markdown subheadings (e.g., `#### Subheading Title`) to break up long sections of text.
+    - When creating lists, use markdown hyphens (`-`) for bullet points, not asterisks (`*`).
     - Explain complex concepts clearly and concisely.
     - Ensure proper paragraph breaks to avoid large walls of text.
-    - Add sources of the information in cases of Zero-day and Hot attack categories. Add also where users can apply the patch incases if patch is available.
-    - Try to be as helpful as you can to the reader to fix a Zero-Day or Hot attacks. Do not preassume, use official sources to provide the information                                                                    
     """
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
@@ -183,15 +160,15 @@ def push_to_github(filename, content):
         log_error(f"Failed to push to GitHub: {e}. Response: {response.text}")
 
 if __name__ == "__main__":
-    # --- Fully Autonomous Workflow ---
-    # 1. Get the latest topic from the AI
-    original_topic = get_latest_cybersecurity_topic()
+    if len(sys.argv) < 2:
+        log_error("Usage: python publish.py \"Your Blog Post Topic\"")
     
-    # 2. The rest of the process is the same as before
+    original_topic = sys.argv[1]
+    
     creative_title = get_creative_title(original_topic)
     post_category = research_cve_status(original_topic)
     markdown_content = get_ai_generated_post(creative_title, original_topic, post_category)
     new_filename = generate_filename(creative_title)
     push_to_github(new_filename, markdown_content)
     
-    log_success("Automation complete. A new post should be live in ~60 seconds.")
+    log_success("Automation complete. Your new post should be live in ~60 seconds.")
