@@ -62,10 +62,11 @@
         .post-content {
             overflow-wrap: break-word;
             word-wrap: break-word;
+            word-break: normal; /* <-- Added to prevent mid-word breaks */
         }
         .post-content pre, .post-content code {
             white-space: pre-wrap;
-            word-break: break-all;
+            word-break: normal; /* <-- Changed from break-all to normal */
         }
         .post-content h3, .post-content h4 {
             font-size: 1.5rem;
@@ -79,6 +80,7 @@
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
+    </style>
 
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -87,8 +89,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-NTSNP7RZ');</script>
 <!-- End Google Tag Manager -->
-                             
-    </style>
 
   <meta name="description" id="meta-description" content="Cybersecurity post.">
   <meta name="robots" content="index, follow">
