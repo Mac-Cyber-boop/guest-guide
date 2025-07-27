@@ -31,4 +31,4 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           SEARCH_ENGINE_ID: ${{ secrets.SEARCH_ENGINE_ID }}
         run: |
-          python publish.py "the most important cybersecurity news or zero-day vulnerability disclosed in the last 24 hours"
+          python publish.py "The most important cybersecurity news or zero-day vulnerability disclosed in the last 24 hours or Latest Tools and Tricks of Hacking or Explainer and working of a Cybersecurity, Hacking Tool."
