@@ -16,10 +16,10 @@ POSTS_DIRECTORY = "_posts"
 try:
     GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"] 
+    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
     SEARCH_ENGINE_ID = os.environ["SEARCH_ENGINE_ID"]
 except KeyError as e:
-    print(f"ERROR: Missing environment variable: {e}. Please set GITHUB_TOKEN, GEMINI_API_KEY, GOOGLE_API_KEY, and SEARCH_ENGINE_ID.")
+    print(f"ERROR: Missing environment variable: {e}.")
     sys.exit(1)
 
 # Configure the Gemini API client
@@ -42,7 +42,35 @@ def generate_filename(title):
     s = s.strip('-')
     return f"{s}.md"
 
+def get_latest_cybersecurity_topic():
+    """
+    Uses AI to find the single most important cybersecurity news story or vulnerability
+    disclosed in the last 24 hours.
+    """
+    log_info("Asking AI to research the latest cybersecurity topic...")
+    prompt = """
+    You are a world-class cybersecurity threat intelligence analyst.
+    Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
+    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours.
+
+    Return only the specific, descriptive topic name. For example:
+    - "Critical RCE Vulnerability in Apache Flink"
+    - "BlackCat Ransomware Targets Healthcare Sector"
+    - "Analysis of the new 'Sandman' APT Espionage Campaign"
+
+    Provide only the topic.
+    """
+    try:
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        response = model.generate_content(prompt)
+        topic = response.text.strip()
+        log_success(f"AI identified the latest topic: {topic}")
+        return topic
+    except Exception as e:
+        log_error(f"Could not get the latest topic from AI: {e}")
+
 def get_creative_title(topic):
+    """Uses AI to generate a compelling title."""
     log_info("Asking AI to generate a creative title...")
     prompt = f"""
     You are a marketing expert and copywriter for a top-tier cybersecurity blog called 'Zero Day Briefing'.
@@ -63,6 +91,7 @@ def get_creative_title(topic):
         log_error(f"Could not generate title from AI: {e}")
 
 def research_cve_status(topic):
+    """Researches a CVE to determine if it's a zero-day."""
     cve_match = re.search(r'(CVE-\d{4}-\d{4,7})', topic, re.IGNORECASE)
     if not cve_match:
         log_info("No CVE found in topic, defaulting category to 'hot-attacks'.")
@@ -106,13 +135,13 @@ def get_ai_generated_post(title, topic, category):
 
     The main content of the article should be at least 400 words long.
     
-    **Formatting and Readability Rules:**
+    Formatting and Readability Rules:
     - The content must be highly readable and well-structured for a technical audience.
-    - When creating lists, use actual Bullets for bullet points, not asterisks (`*`).
+    - When creating lists, use actual Bullets for bullet points, not asterisks (`*`).   
     - Explain complex concepts clearly and concisely.
     - Ensure proper paragraph breaks to avoid large walls of text.
     - Add sources of the information in cases of Zero-day and Hot attack categories. Add also where users can apply the patch incases if patch is available.
-    - Try to be as helpful as you can to the reader to fix a Zero-Day or Hot attacks. Do not preassume, use official sources to provide the information  
+    - Try to be as helpful as you can to the reader to fix a Zero-Day or Hot attacks. Do not preassume, use official sources to provide the information                                                                    
     """
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
@@ -132,7 +161,7 @@ def push_to_github(filename, content):
         get_response = requests.get(url, headers=headers)
         if get_response.status_code == 200:
             sha = get_response.json()['sha']
-            log_info(f"File '{filename}' already exists. Preparing to update.")
+            log_info(f"File '{filename}' already exists. This is unusual for an autonomous script. Overwriting.")
     except requests.exceptions.RequestException:
         pass
 
@@ -153,15 +182,15 @@ def push_to_github(filename, content):
         log_error(f"Failed to push to GitHub: {e}. Response: {response.text}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        log_error("Usage: python publish.py \"Your Blog Post Topic\"")
+    # --- Fully Autonomous Workflow ---
+    # 1. Get the latest topic from the AI
+    original_topic = get_latest_cybersecurity_topic()
     
-    original_topic = sys.argv[1]
-    
+    # 2. The rest of the process is the same as before
     creative_title = get_creative_title(original_topic)
     post_category = research_cve_status(original_topic)
     markdown_content = get_ai_generated_post(creative_title, original_topic, post_category)
     new_filename = generate_filename(creative_title)
     push_to_github(new_filename, markdown_content)
     
-    log_success("Automation complete. Your new post should be live in ~60 seconds.")
+    log_success("Automation complete. A new post should be live in ~60 seconds.")
