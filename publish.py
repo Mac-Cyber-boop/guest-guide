@@ -51,7 +51,8 @@ def get_latest_cybersecurity_topic():
     prompt = """
     You are a world-class cybersecurity threat intelligence analyst.
     Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
-    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours.
+    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours. Look for online tools and sites, use Google.
+    Also add latest Tools in Cybersecurity and Hacking world. Add Tricks and Tips used by Hackers to exploit systems.
 
     Return only the specific, descriptive topic name. For example:
     - "Critical RCE Vulnerability in Apache Flink"
@@ -133,7 +134,7 @@ def get_ai_generated_post(title, topic, category):
     - category: {category}
     - excerpt: A compelling, one-sentence summary of the article, no more than 50 words.
 
-    The main content of the article should be at least 400 words long.
+    The main content of the article should be at least 1500-2000 words long.
     
     Formatting and Readability Rules:
     - The content must be highly readable and well-structured for a technical audience.
