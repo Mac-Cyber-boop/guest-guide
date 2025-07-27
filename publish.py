@@ -26,20 +26,16 @@ except KeyError as e:
 genai.configure(api_key=GEMINI_API_KEY)
 
 def log_info(message):
-    """Prints an informational message."""
     print(f"[INFO] {message}")
 
 def log_success(message):
-    """Prints a success message."""
     print(f"\033[92m[SUCCESS]\033[0m {message}")
 
 def log_error(message):
-    """Prints an error message and exits."""
     print(f"\033[91m[ERROR]\033[0m {message}")
     sys.exit(1)
 
 def generate_filename(title):
-    """Creates a URL-friendly filename from a post title."""
     s = title.lower()
     s = re.sub(r'[^a-z0-9\s-]', '', s)
     s = re.sub(r'[\s-]+', '-', s)
@@ -55,7 +51,7 @@ def get_latest_cybersecurity_topic():
     prompt = """
     You are a world-class cybersecurity threat intelligence analyst.
     Your task is to identify the single most important, impactful, or widely discussed cybersecurity news story,
-    vulnerability disclosure, or major threat actor campaign that has emerged in the last 24 hours.
+    vulnerability disclosure, major threat actor campaign, Zero-Day vulnerabilities, Latest Cybersecurity tools and tricks, Hacking tools, Hacking tricks that has emerged in the last 24 hours.
 
     Return only the specific, descriptive topic name. For example:
     - "Critical RCE Vulnerability in Apache Flink"
@@ -77,7 +73,7 @@ def get_creative_title(topic):
     """Uses AI to generate a compelling title."""
     log_info("Asking AI to generate a creative title...")
     prompt = f"""
-    You are an expert cybersecurity journalist and editor for the 'Zero Day Briefing' blog. Your task is to take a technical topic and write a compelling, high-impact title.
+   You are an expert cybersecurity journalist and editor for the 'Zero Day Briefing' blog. Your task is to take a technical topic and write a compelling, high-impact title.
 
     **Instructions:**
     1.  **Be Specific:** Instead of "New Vulnerability Found," use "Critical RCE Flaw in Apache Flink Threatens Data Centers."
@@ -89,15 +85,10 @@ def get_creative_title(topic):
     - "Inside the 'VoltBleed' Attack: How a Smart Meter Flaw Could Destabilize the Grid"
     - "Lazarus Group's New DeFi Drainer Siphons Millions from Crypto Wallets"
     - "Bypassing EDR: How Threat Actors Use Direct Syscalls to Evade Detection"
-
-    **TOPIC:** "{topic}"
-
-    Generate ONE unique, high-quality title based on these instructions.
     """
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt)
-        # Clean up the title, remove quotes and markdown
         creative_title = response.text.strip().replace('"', '').replace('*', '')
         log_success(f"Generated Title: {creative_title}")
         return creative_title
@@ -140,15 +131,14 @@ def get_ai_generated_post(title, topic, category):
     
     Write a detailed, in-depth blog post about the following original topic: "{topic}".
 
-    The entire response MUST start with the YAML frontmatter block and be followed immediately by the content.
-
+    The post MUST be formatted in markdown and MUST include a YAML frontmatter block at the very top.
     The frontmatter block must be enclosed in '---' and contain these exact fields and values:
     - title: "{title}"
     - date: {datetime.date.today().isoformat()}
     - category: {category}
     - excerpt: A compelling, one-sentence summary of the article, no more than 50 words.
 
-    The main content of the article MUST be written in clean, readable FORMAT.
+  The main content of the article MUST be written in clean, readable format.
     
     **HTML Formatting and Readability Rules:**
     - The content MUST begin immediately after the final '---' of the frontmatter.
@@ -156,7 +146,6 @@ def get_ai_generated_post(title, topic, category):
     - Ensure the Bullet Points are used where needed.
     - Make the content more read friendly.
     - Ensure proper paragraph breaks to avoid large walls of text.
-    - DO NOT use any markdown characters like '###' or '*'.
     """
     try:
         model = genai.GenerativeModel('gemini-1.5-flash')
@@ -198,7 +187,6 @@ def push_to_github(filename, content):
 
 if __name__ == "__main__":
     # --- Fully Autonomous Workflow ---
-    
     # 1. Get the latest topic from the AI
     original_topic = get_latest_cybersecurity_topic()
     
