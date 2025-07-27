@@ -140,7 +140,7 @@ def get_ai_generated_post(title, topic, category):
     
     Write a detailed, in-depth blog post about the following original topic: "{topic}".
 
-    The entire response MUST start with the YAML frontmatter block and be followed immediately by the HTML content.
+    The entire response MUST start with the YAML frontmatter block and be followed immediately by the content.
 
     The frontmatter block must be enclosed in '---' and contain these exact fields and values:
     - title: "{title}"
