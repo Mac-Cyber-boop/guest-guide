@@ -1,533 +1,305 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zero Day Briefing</title>
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-NTSNP7RZ');</script>
+    <title>Zero Day Brief | Business Automation Agency</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="config.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'brand-bg': '#080808',
+                        'brand-card': '#121212',
+                        'brand-accent': '#22c55e', // Success Green
+                        'brand-border': '#27272a',
+                        'brand-text': '#a1a1aa',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0a0a0a;
-            color: #e0e0e0;
-            overflow-x: hidden;
+            background-color: #080808;
+            color: #f4f4f5;
         }
-        .font-mono { font-family: 'Roboto Mono', monospace; }
-        .neon-text {
-            text-shadow:
-                0 0 5px rgba(0, 191, 255, 0.8), 0 0 10px rgba(0, 191, 255, 0.8),
-                0 0 20px rgba(0, 191, 255, 0.8), 0 0 40px rgba(0, 191, 255, 0.6),
-                0 0 80px rgba(0, 191, 255, 0.6);
-            color: #fff;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 15px 0px rgba(255, 0, 255, 0.6); }
-            50% { transform: scale(1.05); box-shadow: 0 0 30px 10px rgba(255, 0, 255, 0.8); }
-        }
-        .cta-pulse { animation: pulse 2.5s infinite; background-color: #ff00ff; border: 1px solid #ff33ff; }
-        @keyframes glitch {
-            2%, 64% { transform: translate(2px, 0) skew(0deg); }
-            4%, 60% { transform: translate(-2px, 0) skew(0deg); }
-            62% { transform: translate(0, 0) skew(5deg); }
-        }
-        .glitch { animation: glitch 1s linear infinite; }
-        .scroll-animate { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
-        .scroll-animate.visible { opacity: 1; transform: translateY(0); }
-        #cursor-orb {
-            position: fixed; width: 20px; height: 20px; border-radius: 50%;
-            background: rgba(0, 191, 255, 0.5); box-shadow: 0 0 20px rgba(0, 191, 255, 0.8);
-            pointer-events: none; transform: translate(-50%, -50%);
-            transition: transform 0.1s ease-out, width 0.2s ease-out, height 0.2s ease-out;
-            z-index: 9999;
-        }
-        .noise::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><g fill-opacity="0.02" fill="%23ffffff"><rect x="0" y="0" width="800" height="800"/><rect x="100" y="100" width="10" height="10"/><rect x="200" y="200" width="5" height="5"/><rect x="300" y="300" width="2" height="2"/><rect x="450" y="450" width="1" height="1"/><rect x="650" y="250" width="3" height="3"/></g></svg>');
-            z-index: -1; opacity: 0.5;
-        }
-        .filter-btn.active { background-color: #ff00ff; color: white; border-color: #ff00ff; }
-        #search-input::placeholder { color: #555; }
-        .scanline-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10000;
-            background: linear-gradient(to bottom, rgba(22, 22, 22, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
-            background-size: 100% 4px; animation: scanline 10s linear infinite;
-        }
-        @keyframes scanline { from { background-position: 0 0; } to { background-position: 0 100%; } }
-        #terminal {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0; color: #0f0; text-shadow: 0 0 5px #0f0;
-            font-family: 'Roboto Mono', monospace; white-space: pre-wrap; word-wrap: break-word; opacity: 0.2;
-            z-index: -1; overflow: hidden; font-size: 12px;
-        }
-        #terminal-content::after { content: '█'; animation: blink 1s step-end infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-        .matrix-rain {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -2;
-        }
-        .matrix-rain span {
-            position: absolute; color: #0f0; font-family: 'Roboto Mono', monospace; font-size: 16px; opacity: 0.6;
-            animation: rain 5s linear infinite;
-        }
-        @keyframes rain { 0% { transform: translateY(-100vh); opacity: 0.6; } 100% { transform: translateY(100vh); opacity: 0.2; } }
 
-        #modal-content {
-            overflow-wrap: break-word;
-            word-wrap: break-word;
+        /* Custom Input Styles */
+        input,
+        textarea,
+        select {
+            background-color: #121212;
+            border: 1px solid #27272a;
+            color: white;
+            transition: all 0.2s;
         }
-        #modal-content pre, #modal-content code {
-            white-space: pre-wrap;
-            word-break: break-all;
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 1px #22c55e;
         }
     </style>
-
-  <meta name="description" content="Zero Day Briefing - Cybersecurity intelligence, zero-day reports, threat actor tracking.">
-  <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://zeroday.site/index.html">
-  <meta property="og:title" content="Zero Day Briefing">
-  <meta property="og:description" content="Elite Cybersecurity Briefings. Stay ahead of zero-day threats and blackhat activity.">
-  <meta property="og:url" content="https://zeroday.site/">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-
 </head>
-<body class="bg-[#0a0a0a] relative noise">
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K0NB3XNZXG"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-K0NB3XNZXG');
-    </script>
-    
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NTSNP7RZ"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <div id="matrix-rain" class="matrix-rain"></div>
-    <div id="cursor-orb"></div>
-    <div class="scanline-overlay"></div>
 
-    <header class="fixed top-0 left-0 right-0 bg-[#0a0a0a] bg-opacity-80 backdrop-blur-sm z-40 border-b border-gray-800">
-        <div class="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
-            <div class="hidden md:flex items-baseline space-x-6">
-                 <a href="index.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Zero-Day Briefing</a>
-                <a href="about.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">About</a>
-                <a href="services.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Services</a>
-                <a href="contact.html" class="nav-link text-lg font-bold font-mono neon-text glitch hover:text-fuchsia-400 transition-colors">Contact</a>
-            </div>
-            <a href="index.html" class="md:hidden nav-link text-lg font-bold font-mono neon-text glitch">Zero-Day Briefing</a>
-            
-            <div class="flex items-center space-x-4">
-                <button id="search-button" class="text-white hover:text-fuchsia-400 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                </button>
-                <div class="md:hidden">
-                    <button id="mobile-menu-button" class="text-white focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                    </button>
-                </div>
-                <button id="subscribe-button" class="hidden md:block bg-fuchsia-600 text-white font-bold py-2 px-5 rounded-lg text-sm hover:bg-fuchsia-500 transition-colors">Subscribe</button>
-            </div>
-        </div>
-    </header>
+<body class="font-sans antialiased selection:bg-brand-accent selection:text-white">
 
-    <div id="mobile-menu" class="hidden fixed inset-0 bg-[#0a0a0a] z-50 flex flex-col items-center justify-center">
-        <button id="mobile-menu-close-button" class="absolute top-5 right-5 text-white focus:outline-none">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <nav class="flex flex-col items-center space-y-8">
-            <a href="index.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Briefings</a>
-            <a href="about.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">About</a>
-            <a href="services.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Services</a>
-            <a href="contact.html" class="nav-link mobile-nav-link text-2xl font-bold font-mono neon-text glitch">Contact</a>
-            <button id="mobile-subscribe-button" class="mt-8 bg-fuchsia-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-fuchsia-500 transition-colors">Subscribe</button>
-        </nav>
-    </div>
-    
-    <div id="search-overlay" class="hidden fixed inset-0 bg-black/90 z-50 flex items-start justify-center p-4 pt-24 sm:pt-40">
-        <button id="search-close-button" class="absolute top-5 right-5 text-white focus:outline-none hover:text-fuchsia-400 transition-colors">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <div class="w-full max-w-2xl bg-[#111] border border-gray-700 rounded-lg shadow-2xl shadow-fuchsia-500/10 p-4 font-mono">
-            <div class="flex items-center">
-                <span class="text-green-400 text-xl sm:text-2xl mr-2">$</span>
-                <input type="text" id="search-input" placeholder="Enter command..." class="w-full bg-transparent text-white text-xl sm:text-2xl focus:outline-none">
+    <nav class="border-b border-brand-border bg-brand-bg/90 backdrop-blur fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="font-bold text-xl tracking-tight">
+                ZeroDayBrief<span class="text-brand-accent">.</span>
             </div>
+            <div class="hidden md:flex space-x-10 text-sm font-medium text-brand-text">
+                <a href="#problems" class="hover:text-white transition">The Problem</a>
+                <a href="#solutions" class="hover:text-white transition">Use Cases</a>
+                <a href="#security" class="hover:text-white transition">Security</a>
+            </div>
+            <a href="#contact"
+                class="px-6 py-2.5 bg-white text-black font-semibold text-sm hover:bg-gray-200 transition rounded-full">
+                Book a Free Audit
+            </a>
         </div>
-    </div>
-    
-    <div id="subscribe-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center relative">
-            <button id="subscribe-close-button" class="absolute top-4 right-4 text-gray-500 hover:text-white text-2xl">&times;</button>
-            <h2 class="text-2xl font-bold neon-text mb-4">Join the Network</h2>
-            <p class="text-gray-400 mb-6">Get instant alerts on new Zero-Day threats.</p>
-            
-            <form action="https://gmail.us18.list-manage.com/subscribe/post?u=4112bcacde2d580997bd7353b&amp;id=a7546666da&amp;f_id=00d8abe6f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
-                <div class="space-y-4">
-                    <input type="email" name="EMAIL" class="required email w-full bg-transparent border-b-2 border-gray-600 text-white focus:outline-none focus:border-fuchsia-500 p-2" id="mce-EMAIL" required placeholder="Operative ID (Email)">
-                    <div hidden><input type="hidden" name="tags" value="3118582"></div>
-                    <div style="position: absolute; left: -5000px;" aria-hidden="true">
-                        <input type="text" name="b_4112bcacde2d580997bd7353b_a7546666da" tabindex="-1" value="">
+    </nav>
+
+    <section class="pt-40 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
+        <div
+            class="inline-flex items-center space-x-2 bg-brand-card border border-brand-border px-4 py-1.5 rounded-full mb-8">
+            <span class="w-2 h-2 rounded-full bg-brand-accent animate-pulse"></span>
+            <span class="text-xs font-medium text-gray-300">Accepting New Clients for Jan 2026</span>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-8 max-w-4xl">
+            We Automate Your Boring Work <br>
+            <span class="text-brand-text">So You Can Scale.</span>
+        </h1>
+
+        <p class="text-xl text-brand-text max-w-2xl mb-12 leading-relaxed">
+            Stop paying humans to copy-paste data, answer basic calls, and edit clips.
+            We build custom AI systems that run your business 24/7.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <a href="#solutions"
+                class="px-8 py-4 bg-brand-accent text-white font-bold text-lg hover:bg-green-600 transition rounded-lg text-center">
+                Explore Automation
+            </a>
+            <a href="#contact"
+                class="px-8 py-4 border border-brand-border bg-brand-card text-white font-medium text-lg hover:bg-brand-border transition rounded-lg text-center">
+                Talk to an Engineer
+            </a>
+        </div>
+    </section>
+
+    <section id="solutions" class="py-24 border-t border-brand-border bg-brand-card/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-center">10 Ways We Save You Money</h2>
+            <p class="text-brand-text text-center mb-16 max-w-2xl mx-auto">
+                Select a module below to deploy it for your business.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-brand-bg hover:border-brand-accent transition cursor-default relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-brand-accent/10 w-32 h-32 blur-3xl rounded-full"></div>
+                    <div class="flex justify-between items-start mb-6 relative z-10">
+                        <div class="text-4xl">📞</div>
+                        <span
+                            class="text-xs font-bold bg-green-900/40 text-green-400 px-3 py-1 rounded-full border border-green-900">MOST
+                            REQUESTED</span>
                     </div>
-                    <button type="submit" name="subscribe" id="mc-embedded-subscribe" class="w-full bg-fuchsia-600 text-white font-bold py-3 rounded-lg hover:bg-fuchsia-500 transition-colors">Transmit Securely</button>
+                    <h3 class="text-2xl font-bold mb-2 text-white">24/7 AI Voice Receptionist</h3>
+                    <p class="text-brand-text mb-6">
+                        An AI that sounds 100% human. It answers calls, answers FAQs, checks your calendar availability,
+                        and books appointments directly.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-400 font-medium">
+                        <li class="flex items-center"><span class="text-brand-accent mr-2">✓</span> Handles 500+ calls
+                            simultaneously</li>
+                        <li class="flex items-center"><span class="text-brand-accent mr-2">✓</span> Books directly into
+                            Calendly/Clio</li>
+                    </ul>
                 </div>
-            </form>
-        </div>
-    </div>
 
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-brand-bg hover:border-brand-accent transition cursor-default">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">💬</div>
+                        <span class="text-xs font-bold bg-gray-800 text-gray-300 px-3 py-1 rounded-full">NEW</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white">WhatsApp Ordering System</h3>
+                    <p class="text-brand-text mb-6">
+                        Turn your WhatsApp into a fully automated storefront. Customers can browse your catalog, add
+                        items to cart, and checkout without leaving the app.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-400 font-medium">
+                        <li class="flex items-center"><span class="text-brand-accent mr-2">✓</span> Syncs orders to your
+                            Kitchen/Warehouse</li>
+                        <li class="flex items-center"><span class="text-brand-accent mr-2">✓</span> Upsells items
+                            automatically</li>
+                    </ul>
+                </div>
 
-    <main>
-        <div class="relative min-h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6">
-            <div id="terminal">
-                <span id="terminal-content"></span>
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-brand-bg hover:border-brand-accent transition cursor-default">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">🚀</div>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white">The "Cold Outreach" Engine</h3>
+                    <p class="text-brand-text mb-6">
+                        We build a machine that scrapes 1,000+ targeted leads, verifies emails, and sends personalized
+                        AI-written intros that land in the inbox.
+                    </p>
+                </div>
+
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-brand-bg hover:border-brand-accent transition cursor-default">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">🎥</div>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white">Viral Content Clipper</h3>
+                    <p class="text-brand-text mb-6">
+                        Upload a Zoom call or Podcast. Our system identifies "viral" moments, cuts them into vertical
+                        clips, adds captions, and schedules them.
+                    </p>
+                </div>
+
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-brand-bg hover:border-brand-accent transition cursor-default">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">📦</div>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white">E-commerce Auto-Pilot</h3>
+                    <p class="text-brand-text mb-6">
+                        Sync inventory across Shopify and Amazon in real-time. Automatically handle returns, print
+                        shipping labels, and update customer tracking.
+                    </p>
+                </div>
+
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-brand-bg hover:border-brand-accent transition cursor-default">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">🤝</div>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white">One-Click Onboarding</h3>
+                    <p class="text-brand-text mb-6">
+                        Hire a new employee? The system creates their email, adds them to Slack/Teams, sends the
+                        contract, and assigns training videos instantly.
+                    </p>
+                </div>
+
+                <div
+                    class="group p-8 rounded-2xl border border-brand-border bg-gradient-to-br from-brand-card to-brand-border/50 hover:border-brand-accent transition cursor-default">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="text-4xl">🛠️</div>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 text-white">Custom Architecture</h3>
+                    <p class="text-brand-text mb-6">
+                        Need something unique? We build custom Python Agents, RAG (Chat with your Data) systems, and
+                        internal dashboards.
+                    </p>
+                    <div class="mt-4">
+                        <a href="#contact" class="text-brand-accent font-bold hover:underline">Request Blueprint
+                            &rarr;</a>
+                    </div>
+                </div>
+
             </div>
-            <div class="relative z-10 container mx-auto">
-                <h2 class="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-wider leading-tight flex flex-col sm:flex-row items-center justify-center">
-                    <svg class="inline-block w-12 h-12 sm:w-16 sm:h-16 mr-0 sm:mr-4 mb-4 sm:mb-0 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span>The Hub for <span class="neon-text glitch">Cyber Intelligence</span>.</span>
-                </h2>
-                <p class="mt-6 max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-gray-400">
-                    We provide elite, up-to-the-minute briefings on Zero-Day vulnerabilities, active attack campaigns, new hacking tools, and insider techniques. This is your edge in the digital shadow.
+        </div>
+    </section>
+
+    <section id="contact" class="py-24 border-t border-brand-border bg-brand-bg">
+        <div class="max-w-3xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Apply for an Audit</h2>
+                <p class="text-brand-text">
+                    Tell us what you want to automate. We will build a blueprint and send it to you.
                 </p>
-                <div class="mt-12">
-                    <a href="#latest-briefings" class="cta-pulse text-white font-bold text-lg md:text-2xl py-3 px-8 md:py-4 md:px-12 rounded-lg shadow-lg">
-                        GET THE LATEST BRIEFINGS
-                    </a>
-                </div>
             </div>
-            <div class="absolute bottom-10 animate-bounce z-10">
-                <svg class="w-8 h-8 text-gray-500" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-            </div>
-        </div>
 
-        <div id="latest-briefings" class="py-20 md:py-32">
-            <div class="container mx-auto px-4 sm:px-6">
-                <div class="scroll-animate text-center mb-12">
-                    <h2 id="feed-title" class="text-3xl md:text-5xl font-bold font-mono">Intelligence Feed</h2>
-                    <p id="feed-subtitle" class="text-gray-400 mt-4 text-lg">Select a category to filter the reports.</p>
-                </div>
+            <div class="bg-brand-card p-8 rounded-2xl border border-brand-border">
 
-                <div id="filter-container" class="flex flex-wrap justify-center gap-3 mb-12">
-                    <button data-filter="all" class="filter-btn active font-mono border border-gray-700 text-gray-300 py-2 px-5 rounded-lg hover:border-fuchsia-500 transition-all flex items-center gap-2">All</button>
-                    <button data-filter="zero-day" class="filter-btn font-mono border border-gray-700 text-gray-300 py-2 px-5 rounded-lg hover:border-fuchsia-500 transition-all flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
-                        Zero-Day
-                    </button>
-                    <button data-filter="hot-attacks" class="filter-btn font-mono border border-gray-700 text-gray-300 py-2 px-5 rounded-lg hover:border-fuchsia-500 transition-all flex items-center gap-2">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.934l-6.794 12.47a1 1 0 001.649 1.095l6.794-12.47a1 1 0 00-.2-1.649z" clip-rule="evenodd" /><path fill-rule="evenodd" d="M9.166 3.39a1 1 0 011.07.284l4.584 6.876a1 1 0 01-1.342 1.482l-4.584-6.876a1 1 0 01.282-1.766z" clip-rule="evenodd" /></svg>
-                        Hot Attacks
-                    </button>
-                    <button data-filter="tools" class="filter-btn font-mono border border-gray-700 text-gray-300 py-2 px-5 rounded-lg hover:border-fuchsia-500 transition-all flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.532 1.532 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.532 1.532 0 01-.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
-                        Tools
-                    </button>
-                    <button data-filter="tricks" class="filter-btn font-mono border border-gray-700 text-gray-300 py-2 px-5 rounded-lg hover:border-fuchsia-500 transition-all flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 7.072l.707-.707a1 1 0 10-1.414-1.414l-.707.707a1 1 0 001.414 1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" /></svg>
-                        Tricks & Tips
-                    </button>
-                </div>
+                <form action="https://formspree.io/f/xgowkvkj" method="POST">
 
-                <div id="blog-posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <div id="modal" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-fuchsia-500/20">
-            <div class="p-6 md:p-8">
-                <h2 id="modal-title" class="text-2xl md:text-3xl font-bold neon-text mb-2"></h2>
-                <p id="modal-date" class="font-mono text-sm text-gray-500 mb-6"></p>
-                <div id="modal-content" class="text-gray-300 space-y-4 leading-relaxed content-wrapper"></div>
-            </div>
-            <div class="p-4 bg-black bg-opacity-20 text-right">
-                 <button id="close-modal" class="bg-gray-700 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        // All JavaScript logic is now inside this event listener
-        // This ensures all HTML elements are loaded before the script runs.
-        
-        let blogPosts = [];
-        
-        const GITHUB_CONFIG = {
-            OWNER: 'mac-cyber-boop',
-            REPO: 'guest-guide'
-        };
-
-        async function fetchBlogPosts() {
-            const url = `https://api.github.com/repos/${GITHUB_CONFIG.OWNER}/${GITHUB_CONFIG.REPO}/contents/_posts`;
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`Could not fetch posts from GitHub: ${response.statusText}`);
-                const files = await response.json();
-                const postFiles = files.filter(file => file.name.endsWith('.md'));
-                const posts = await Promise.all(postFiles.map(async file => {
-                    const postResponse = await fetch(file.download_url);
-                    const markdown = await postResponse.text();
-                    const frontMatterMatch = markdown.match(/---([\s\S]*?)---/);
-                    const frontMatterText = frontMatterMatch ? frontMatterMatch[1] : '';
-                    const content = markdown.replace(/---[\s\S]*?---/, '').trim();
-                    const postData = {};
-                    frontMatterText.split('\n').forEach(line => {
-                        const parts = line.split(':');
-                        if (parts.length > 1) {
-                            const key = parts[0].trim();
-                            const value = parts.slice(1).join(':').trim().replace(/^"(.*)"$/, '$1');
-                            postData[key] = value;
-                        }
-                    });
-                    postData.content = marked.parse(content);
-                    postData.id = file.sha;
-                    postData.filename = file.name;
-                    return postData;
-                }));
-                posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-                return posts;
-            } catch (error) {
-                console.error("Failed to fetch blog posts:", error);
-                postsContainer.innerHTML = `<p class="text-red-500 text-center col-span-full">Error: Could not load briefings. Check GitHub repo details and ensure the '_posts' folder exists.</p>`;
-                return [];
-            }
-        }
-
-        const postsContainer = document.getElementById('blog-posts-container');
-        const filterContainer = document.getElementById('filter-container');
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenuCloseButton = document.getElementById('mobile-menu-close-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const searchButton = document.getElementById('search-button');
-        const searchOverlay = document.getElementById('search-overlay');
-        const searchCloseButton = document.getElementById('search-close-button');
-        const searchInput = document.getElementById('search-input');
-        const feedTitle = document.getElementById('feed-title');
-        const feedSubtitle = document.getElementById('feed-subtitle');
-        const terminalContent = document.getElementById('terminal-content');
-        const matrixRainContainer = document.getElementById('matrix-rain');
-        const subscribeButton = document.getElementById('subscribe-button');
-        const mobileSubscribeButton = document.getElementById('mobile-subscribe-button');
-        const subscribeModal = document.getElementById('subscribe-modal');
-        const subscribeCloseButton = document.getElementById('subscribe-close-button');
-
-        let currentFilter = 'all';
-
-        const categoryColors = {
-            'zero-day': 'bg-red-500/20 text-red-300 border-red-500/30',
-            'hot-attacks': 'bg-orange-500/20 text-orange-300 border-orange-500/30',
-            'tools': 'bg-sky-500/20 text-sky-300 border-sky-500/30',
-            'tricks': 'bg-green-500/20 text-green-300 border-green-500/30'
-        };
-
-        const renderPosts = (postsToRender) => {
-            postsContainer.innerHTML = '';
-            if (postsToRender.length === 0) {
-                postsContainer.innerHTML = `<p class="text-gray-500 text-center col-span-full">No briefings found.</p>`;
-                return;
-            }
-            postsToRender.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'scroll-animate bg-black bg-opacity-30 p-6 rounded-xl border border-gray-800 hover:border-fuchsia-500 transition-all duration-300 flex flex-col';
-                const colorClasses = categoryColors[post.category] || 'bg-gray-500/20 text-gray-300';
-                const readMoreLink = post.category === 'zero-day' 
-                    ? `<button data-post-id="${post.id}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</button>`
-                    : `<a href="post.html?post=${post.filename}" class="read-more-btn mt-6 text-fuchsia-400 font-bold self-start hover:text-fuchsia-300">Read More →</a>`;
-                postElement.innerHTML = `
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <p class="font-mono text-sm text-gray-500">${new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
-                            <span class="font-mono text-xs py-1 px-2 rounded-full ${colorClasses}">${post.category.replace('-', ' ')}</span>
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
+                            <input type="text" name="name" required
+                                class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-brand-accent"
+                                placeholder="John Doe">
                         </div>
-                        <h3 class="text-2xl font-bold text-white mb-4">${post.title}</h3>
-                        <p class="text-gray-400 flex-grow">${post.excerpt}</p>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
+                            <input type="email" name="email" required
+                                class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-brand-accent"
+                                placeholder="john@company.com">
+                        </div>
                     </div>
-                    ${readMoreLink}
-                `;
-                postsContainer.appendChild(postElement);
-            });
-            document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
-        };
-        
-        const applyFilter = (filter) => {
-            currentFilter = filter;
-            document.querySelector('.filter-btn.active').classList.remove('active');
-            document.querySelector(`.filter-btn[data-filter="${filter}"]`).classList.add('active');
-            const postsToRender = filter === 'all' ? blogPosts : blogPosts.filter(p => p.category === filter);
-            renderPosts(postsToRender);
-            feedTitle.textContent = "Intelligence Feed";
-            feedSubtitle.textContent = "Select a category to filter the reports.";
-            filterContainer.classList.remove('hidden');
-        };
 
-        filterContainer.addEventListener('click', (e) => {
-            if (e.target.closest('button')) {
-                applyFilter(e.target.closest('button').dataset.filter);
-            }
-        });
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Business Type</label>
+                        <select name="business-type"
+                            class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-brand-accent">
+                            <option value="Agency">Marketing / Creative Agency</option>
+                            <option value="Ecommerce">E-commerce Brand</option>
+                            <option value="Local">Local Business (Clinic, Gym, Law)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
 
-        const toggleMobileMenu = () => mobileMenu.classList.toggle('hidden');
-        mobileMenuButton.addEventListener('click', toggleMobileMenu);
-        mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-400 mb-2">What process do you want to
+                            automate?</label>
+                        <textarea name="message" rows="4" required
+                            class="w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-brand-accent"
+                            placeholder="I spend too much time on..."></textarea>
+                    </div>
 
-        const openSearch = () => {
-            searchOverlay.classList.remove('hidden');
-            searchInput.focus();
-        };
-        const closeSearch = () => {
-            searchOverlay.classList.add('hidden');
-            searchInput.value = '';
-            applyFilter(currentFilter);
-        };
+                    <button type="submit"
+                        class="w-full py-4 bg-brand-accent text-white font-bold text-lg rounded-lg hover:bg-green-600 transition shadow-lg shadow-green-900/20">
+                        Submit Request
+                    </button>
 
-        searchButton.addEventListener('click', openSearch);
-        searchCloseButton.addEventListener('click', closeSearch);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !searchOverlay.classList.contains('hidden')) {
-                closeSearch();
-            }
-        });
+                    <p class="text-center text-xs text-gray-500 mt-4">
+                        100% Secure. We reply within 24 hours.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </section>
 
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            if (searchTerm.length > 0) {
-                const searchResults = blogPosts.filter(post => 
-                    post.title.toLowerCase().includes(searchTerm) || 
-                    post.excerpt.toLowerCase().includes(searchTerm)
-                );
-                renderPosts(searchResults);
-                feedTitle.textContent = `Search Results for "${searchTerm}"`;
-                feedSubtitle.textContent = `${searchResults.length} briefings found.`;
-                filterContainer.classList.add('hidden');
-            } else {
-                applyFilter(currentFilter);
-            }
-        });
-
-        const openSubscribeModal = () => subscribeModal.classList.remove('hidden');
-        const closeSubscribeModal = () => subscribeModal.classList.add('hidden');
-        subscribeButton.addEventListener('click', openSubscribeModal);
-        mobileSubscribeButton.addEventListener('click', openSubscribeModal);
-        subscribeCloseButton.addEventListener('click', closeSubscribeModal);
-
-        const orb = document.getElementById('cursor-orb');
-        if (window.matchMedia('(pointer: fine)').matches) {
-            document.addEventListener('mousemove', (e) => { orb.style.left = e.clientX + 'px'; orb.style.top = e.clientY + 'px'; });
-        } else {
-            orb.style.display = 'none';
-        }
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('visible');
-            });
-        }, { threshold: 0.1 });
-
-        const modal = document.getElementById('modal'), modalTitle = document.getElementById('modal-title'), modalDate = document.getElementById('modal-date'), modalContent = document.getElementById('modal-content'), closeModalBtn = document.getElementById('close-modal');
-        const openModal = (post) => {
-            modalTitle.textContent = post.title;
-            modalDate.textContent = new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            modalContent.innerHTML = post.content;
-            modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
-        };
-        const hideModal = () => { modal.classList.add('hidden'); document.body.style.overflow = ''; };
-        postsContainer.addEventListener('click', (e) => {
-            const readMoreButton = e.target.closest('.read-more-btn');
-            if (readMoreButton && readMoreButton.tagName === 'BUTTON') {
-                const postId = readMoreButton.dataset.postId;
-                const post = blogPosts.find(p => p.id === postId);
-                if (post) openModal(post);
-            }
-        });
-        closeModalBtn.addEventListener('click', hideModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
-        
-        const terminalLines = [
-            'Booting ZDB Mainframe...',
-            'Connecting to global threat network...',
-            'SYN... ACK...',
-            'Connection established.',
-            'Loading latest intelligence briefings...',
-            'Welcome, operative.'
-        ];
-        let lineIndex = 0;
-        let charIndex = 0;
-        
-        function typeTerminal() {
-            if (lineIndex < terminalLines.length) {
-                if (charIndex < terminalLines[lineIndex].length) {
-                    terminalContent.innerHTML += terminalLines[lineIndex].charAt(charIndex);
-                    charIndex++;
-                    setTimeout(typeTerminal, Math.random() * 100 + 20);
-                } else {
-                    terminalContent.innerHTML += '\n';
-                    lineIndex++;
-                    charIndex = 0;
-                    setTimeout(typeTerminal, 500);
-                }
-            } else {
-                setTimeout(() => {
-                    terminalContent.innerHTML = '';
-                    lineIndex = 0;
-                    charIndex = 0;
-                    typeTerminal();
-                }, 5000);
-            }
-        }
-        
-        function createRainDrop() {
-            const drop = document.createElement('span');
-            drop.textContent = String.fromCharCode(0x30A0 + Math.random() * 96);
-            drop.style.left = Math.random() * 100 + 'vw';
-            drop.style.animationDuration = Math.random() * 3 + 3 + 's';
-            matrixRainContainer.appendChild(drop);
-            setTimeout(() => drop.remove(), 6000);
-        }
-        setInterval(createRainDrop, 100);
-
-        async function init() {
-            blogPosts = await fetchBlogPosts();
-            applyFilter('all');
-            typeTerminal();
-        }
-
-        init();
-    });
-    </script>
-
-  <div id="subscribe-modal" class="hidden fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-    <div class="bg-[#111] border border-fuchsia-500 rounded-lg max-w-md w-full p-6 font-mono text-center">
-      <button onclick="this.closest('#subscribe-modal').classList.add('hidden');" class="absolute top-4 right-4 text-white text-2xl">&times;</button>
-      <form action="https://formspree.io/f/your-id" method="POST" class="space-y-4">
-        <input type="email" name="email" placeholder="Your email" required class="w-full p-3 bg-black border border-fuchsia-500 rounded text-white" />
-        <button type="submit" class="bg-fuchsia-600 w-full py-3 font-bold text-white rounded hover:bg-fuchsia-500">Subscribe</button>
-      </form>
-    </div>
-  </div>
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    "name": "Zero Day Briefing",
-    "url": "https://zeroday.site",
-    "description": "Cybersecurity briefings on zero-day threats, attack campaigns, and hacker tooling.",
-    "publisher": {
-      "@type": "Organization",
-      "name": "Zero Day Briefing"
-    }
-  }
-  </script>
+    <section class="py-12 border-t border-brand-border bg-brand-card">
+        <div class="max-w-7xl mx-auto px-6 text-center mb-8">
+            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Secure Architecture By</h3>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <span class="px-4 py-2 bg-brand-bg border border-brand-border rounded text-sm text-gray-400">AWS
+                    Certified</span>
+                <span class="px-4 py-2 bg-brand-bg border border-brand-border rounded text-sm text-gray-400">Certified
+                    Ethical Hacker</span>
+                <span class="px-4 py-2 bg-brand-bg border border-brand-border rounded text-sm text-gray-400">Python
+                    Expert</span>
+            </div>
+        </div>
+        <div
+            class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-sm text-brand-text pt-8 border-t border-brand-border/30">
+            <div class="mb-4 md:mb-0">
+                <strong>ZeroDayBrief</strong> &copy; 2025
+            </div>
+            <div class="flex space-x-6">
+                <a href="mailto:Zerodaybrief@proton.me" class="hover:text-white transition">Zerodaybrief@proton.me</a>
+            </div>
+        </div>
+    </section>
 
 </body>
+
 </html>
